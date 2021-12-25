@@ -7,24 +7,28 @@
     资源加载
 *******************************************/
 
-import { ELoadBundle, ILoad } from "./ILoad";
+import { ILoad, ILoadOptions } from "./ILoad";
 import Res from "./Res";
 
 export default class ResLoad implements ILoad {
 
-    loadPrefab(path: string, bundle: ELoadBundle): Res<cc.Prefab> {
-        throw new Error("Method not implemented.");
+    loadPrefab(loadOptions: ILoadOptions): Res<cc.Prefab> {
+        loadOptions.type = cc.Prefab;
+        return new Res(loadOptions);
     }
 
-    loadImage(path: string, bundle: ELoadBundle): Res<cc.SpriteFrame> {
-        return new Res<cc.SpriteFrame>({ path, bundle, type: cc.SpriteFrame });
+    loadImage(loadOptions: ILoadOptions): Res<cc.SpriteFrame> {
+        loadOptions.type = cc.SpriteFrame;
+        return new Res(loadOptions);
     }
 
-    loadAudio(path: string, bundle: ELoadBundle): Res<cc.AudioClip> {
-        throw new Error("Method not implemented.");
+    loadAudio(loadOptions: ILoadOptions): Res<cc.AudioClip> {
+        loadOptions.type = cc.AudioClip;
+        return new Res(loadOptions);
     }
 
-    loadFont(path: string, bundle: ELoadBundle): Res<cc.Font> {
-        throw new Error("Method not implemented.");
+    loadFont(loadOptions: ILoadOptions): Res<cc.Font> {
+        loadOptions.type = cc.Font;
+        return new Res(loadOptions);
     }
 }

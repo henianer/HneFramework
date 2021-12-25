@@ -15,11 +15,12 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Home extends cc.Component {
 
-    @property(cc.Sprite)
-    private s_test: cc.Sprite = null;
+    private loadMgr: LoadMgr = LoadMgr.instance(LoadMgr);
 
-    private async onclickSetImage(event?: cc.Event, param?: string) {
-        let a = await LoadMgr.instance(LoadMgr).loadImage('images/bg', ELoadBundle.Resources);
-        this.s_test.spriteFrame = a;
+    private async onclickSetPrefab(event?: cc.Event, param?: string) {
+        let a: cc.Prefab = await this.loadMgr.loadPrefab({ path: 'prefabs/TestSprite', bundle: ELoadBundle.Resources });
+        let node: cc.Node = cc.instantiate(a);
+        node.parent = this.node;
     }
+
 }
