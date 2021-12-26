@@ -7,13 +7,16 @@
     主页
 *******************************************/
 
-import { ELoadBundle } from "./framework/module/load/ILoad";
+import { ELoadBundle, ELoadPreset } from "./framework/module/load/ILoad";
 import LoadMgr from "./framework/module/load/LoadMgr";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Home extends cc.Component {
+
+    @property(cc.Sprite)
+    public s_sprite: cc.Sprite = null;
 
     private loadMgr: LoadMgr = LoadMgr.instance(LoadMgr);
 

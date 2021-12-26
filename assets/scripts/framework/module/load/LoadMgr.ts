@@ -1,4 +1,4 @@
-import Singleton from "../util/Singleton";
+import Singleton from "../../util/Singleton";
 import { ILoadOptions } from "./ILoad";
 import ResLoad from "./ResLoad";
 

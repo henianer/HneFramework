@@ -8,6 +8,13 @@
 *******************************************/
 
 export interface IUI {
-    Show();
-    Hide();
+    init();
+    show();
+    hide();
+}
+
+export enum EUIType {
+    Base,
+    Dialog,
+    Widget
 }
