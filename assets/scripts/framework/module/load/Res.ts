@@ -7,7 +7,7 @@
     资源
 *******************************************/
 
-import { ELoadPreset, ILoadOptions } from "./ILoad";
+import { ELoadBundle, ELoadPreset, ILoadOptions } from "./ILoad";
 
 export default class Res<T extends cc.Asset> {
 
@@ -17,6 +17,14 @@ export default class Res<T extends cc.Asset> {
     private readonly loadOption: ILoadOptions;
 
     public constructor(loadOptions: ILoadOptions | ILoadOptions[], loadOption: ILoadOptions = Object.create(null)) {
+        // 默认在resources文件加载
+        if (loadOptions instanceof Array) {
+            loadOptions.forEach((element) => {
+                if (element.bundle == null) element.bundle = ELoadBundle.Resources;
+            })
+        } else {
+            if (loadOptions.bundle == null) loadOptions.bundle = ELoadBundle.Resources;
+        }
         this.loadOptions = loadOptions;
         this.loadOption = loadOption;
     }

@@ -12,4 +12,13 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class UIBase extends cc.Component {
 
+    /** 页面创建初始化 */
+    protected onInit() { }
+    /** 页面显示 */
+    protected onShow() { }
+    /** 页面隐藏 */
+    protected onHide() { }
+    /** 页面销毁 */
+    protected onDelete() { }
+
 }
