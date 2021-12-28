@@ -7,18 +7,31 @@
     UI基类
 *******************************************/
 
+import { IUI } from "./IUI";
+import UIUtil from "./UIUtil";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class UIBase extends cc.Component {
+export default class UIBase extends cc.Component implements IUI {
 
-    /** 页面创建初始化 */
-    protected onInit() { }
-    /** 页面显示 */
-    protected onShow() { }
-    /** 页面隐藏 */
-    protected onHide() { }
-    /** 页面销毁 */
-    protected onDelete() { }
+    private _uiUtil: UIUtil;
+    protected get uiUtil(): UIUtil {
+        if (this._uiUtil == null) {
+            this._uiUtil = this.node.addComponent(UIUtil);
+            this._uiUtil.init();
+        }
+        return this._uiUtil;
+    }
 
+    init() {
+    }
+
+    show() {
+        this.node.active = true;
+    }
+
+    hide() {
+        this.node.active = false;
+    }
 }

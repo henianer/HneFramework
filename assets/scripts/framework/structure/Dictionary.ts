@@ -19,11 +19,15 @@ export default class Dictionary<Key, Value> {
         this.data[key] = value;
     }
 
+    public get(key: Key): Value {
+        return this.data[key];
+    }
+
     public remove(key: Key) {
         delete this.data[key]
     }
 
-    public containKey(key: Key) {
+    public containsKey(key: Key) {
         if (this.data[key]) return true;
         return false;
     }

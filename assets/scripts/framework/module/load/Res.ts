@@ -18,13 +18,13 @@ export default class Res<T extends cc.Asset> {
 
     public constructor(loadOptions: ILoadOptions | ILoadOptions[], loadOption: ILoadOptions = Object.create(null)) {
         // 默认在resources文件加载
-        if (loadOptions instanceof Array) {
-            loadOptions.forEach((element) => {
-                if (element.bundle == null) element.bundle = ELoadBundle.Resources;
-            })
-        } else {
-            if (loadOptions.bundle == null) loadOptions.bundle = ELoadBundle.Resources;
-        }
+        // if (loadOptions instanceof Array) {
+        //     loadOptions.forEach((element) => {
+        //         if (element.bundle == null) element.bundle = ELoadBundle.Resources;
+        //     })
+        // } else {
+        //     if (loadOptions.bundle == null) loadOptions.bundle = ELoadBundle.Resources;
+        // }
         this.loadOptions = loadOptions;
         this.loadOption = loadOption;
     }

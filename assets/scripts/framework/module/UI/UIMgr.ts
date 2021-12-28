@@ -13,13 +13,13 @@ import Stack from "../../structure/Stack";
 import Singleton from "../../util/Singleton";
 import { ILoadOptions } from "../load/ILoad";
 import LoadMgr from "../load/LoadMgr";
-import { EUIType, IUI } from "./IUI";
+import { IUI } from "./IUI";
 import UIBase from "./UIBase";
 
 export default class UIMgr extends Singleton<UIMgr> {
 
-    public baseStack: Stack<string> = new Stack();
-    public baseDictionary: Dictionary<string, UIBase> = new Dictionary();
+    private _uiStack: Stack<string> = new Stack();
+    private _uiDic: Dictionary<string, IUI> = new Dictionary();
 
     private _canvas: cc.Node;
     public get canvas(): cc.Node {
@@ -29,23 +29,55 @@ export default class UIMgr extends Singleton<UIMgr> {
         return this._canvas;
     }
 
-    public async create(type: EUIType, loadOptions: ILoadOptions, parent?: cc.Node) {
-        let uiPrefab: cc.Prefab = await LoadMgr.instance(LoadMgr).loadPrefab(loadOptions);
-        let uiNode: cc.Node = cc.instantiate(uiPrefab);
-        if (type === EUIType.Base) {
-            uiNode.setParent(this.canvas);
+    /** 初始化页面 */
+    private async init(loadOptions: ILoadOptions, parent?: cc.Node): Promise<IUI> {
+        let path = loadOptions.bundle + '/' + loadOptions.path;
+        if (this._uiDic.containsKey(path)) {
+            return this._uiDic.get(path);
         } else {
-            if (parent == null) {
-                cc.warn('非主要界面需要传入父节点');
-                return;
+            let prefab = await LoadMgr.instance(LoadMgr).loadPrefab(loadOptions);
+            let node = cc.instantiate(prefab);
+            let component = node.getComponent(`${node.name}`);
+            let ui: IUI;
+            if (component) {
+                if (component instanceof UIBase) {
+                    if (parent) node.parent = parent;
+                    else node.parent = this.canvas;
+                    ui = component as IUI;
+                    ui.init();
+                } else {
+                    cc.warn('当前物体脚本未继承UIBase脚本:' + component.name);
+                }
             } else {
-                uiNode.setParent(parent);
+                cc.warn('当前物体未绑定继承UIBase的脚本:' + node.name);
             }
+            return ui;
         }
     }
 
-    public pushStack() {
-
+    /** 页面入栈(显示) */
+    public async push(loadOptions: ILoadOptions, parent?: cc.Node): Promise<IUI> {
+        let path = loadOptions.bundle + '/' + loadOptions.path;
+        if (this._uiStack.count > 0) {
+            let _path = this._uiStack.peek();
+            this._uiDic.get(_path).hide();
+        }
+        let ui: IUI = await this.init(loadOptions, parent);
+        ui.show();
+        this._uiStack.push(path);
+        this._uiDic.add(path, ui);
+        return ui;
     }
 
+    /** 页面出栈(隐藏、返回) */
+    public pop() {
+        if (this._uiStack.count <= 1) {
+            return;
+        }
+        let _path = this._uiStack.pop();
+        this._uiDic.get(_path).hide();
+
+        _path = this._uiStack.peek();
+        this._uiDic.get(_path).show();
+    }
 }
