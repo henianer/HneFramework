@@ -25,7 +25,7 @@ export default class Stack<T>{
     public push(...elements: T[]) {
         let newCount = elements.length;
         if (this.maxCount && this.array.length + newCount > this.maxCount) {
-            cc.warn('入栈后个数超出预设个数');
+            cc.warn('==>入栈后个数超出预设个数<==');
             return;
         }
         this.array.push(...elements);

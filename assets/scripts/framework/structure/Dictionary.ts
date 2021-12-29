@@ -7,36 +7,60 @@
     字典
 *******************************************/
 
-export default class Dictionary<Key, Value> {
+export default class Dictionary<T> {
 
-    private data;
+    private dictionary = {};
 
     constructor() {
-        this.data = {};
+        this.dictionary = {};
     }
 
-    public add(key: Key, value: Value) {
-        this.data[key] = value;
+    public containsKey(key: string): boolean {
+        return key in this.dictionary;
     }
 
-    public get(key: Key): Value {
-        return this.data[key];
+    public add(key: string, value: T) {
+        this.dictionary[key] = value;
     }
 
-    public remove(key: Key) {
-        delete this.data[key]
-    }
-
-    public containsKey(key: Key) {
-        if (this.data[key]) return true;
+    public delete(key: string): boolean {
+        if (this.containsKey(key)) {
+            delete this.dictionary[key];
+            return true;
+        }
         return false;
     }
 
-    public get count() {
-        return Object.keys(this.data).length;
+    public get(key: string): T {
+        return this.containsKey(key) ? this.dictionary[key] : undefined;
+    }
+
+    public keys(): Array<string> {
+        let result: Array<string> = new Array<string>();
+        for (let key in this.dictionary) {
+            if (this.containsKey(key)) result.push(key);
+        }
+        return result;
+    }
+
+    public values(): Array<T> {
+        let result: Array<T> = new Array<T>();
+        for (let key in this.dictionary) {
+            if (this.containsKey(key)) result.push(this.dictionary[key]);
+        }
+        return result;
+    }
+
+    public getDictionary(): Object {
+        return this.dictionary;
     }
 
     public clear() {
-        this.data = {};
+        this.dictionary = {};
+    }
+
+    public get size(): number {
+        return Object.keys(this.dictionary).length;
     }
 }
+

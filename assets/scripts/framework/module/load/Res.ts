@@ -17,14 +17,19 @@ export default class Res<T extends cc.Asset> {
     private readonly loadOption: ILoadOptions;
 
     public constructor(loadOptions: ILoadOptions | ILoadOptions[], loadOption: ILoadOptions = Object.create(null)) {
-        // 默认在resources文件加载
-        // if (loadOptions instanceof Array) {
-        //     loadOptions.forEach((element) => {
-        //         if (element.bundle == null) element.bundle = ELoadBundle.Resources;
-        //     })
-        // } else {
-        //     if (loadOptions.bundle == null) loadOptions.bundle = ELoadBundle.Resources;
-        // }
+        if (loadOptions instanceof Array) {
+            for (let i = 0; i < loadOptions.length; i++) {
+                if (Object.keys(loadOptions[i]).length === 0) {
+                    cc.warn('==>加载参数传入错误<==');
+                    return;
+                }
+            }
+        } else {
+            if (Object.keys(loadOptions).length === 0) {
+                cc.warn('==>加载参数传入错误<==');
+                return;
+            }
+        }
         this.loadOptions = loadOptions;
         this.loadOption = loadOption;
     }
@@ -47,19 +52,19 @@ export default class Res<T extends cc.Asset> {
 
             let onComplete = (err: Error, res: T) => {
                 if (err) return reject(err);
-                cc.log(`[${res.name}]加载成功`);
+                cc.log(`==>[${res.name}]加载成功<==`);
                 this.asset = res;
                 resolve(this.asset);
             };
 
             if (loadOption.preset === ELoadPreset.Remote) {
                 if (this.loadOptions instanceof Array) {
-                    cc.warn('同时只能加载一个远程资源');
+                    cc.warn('==>同时只能加载一个远程资源<==');
                     resolve(null);
                 } else {
                     let url: string = this.loadOptions.url;
                     if (url === '' || url == null) {
-                        cc.warn('远程资源路径不合法');
+                        cc.warn('==>远程资源路径不合法<==');
                     } else {
                         cc.assetManager.loadRemote(url, loadOption, onComplete);
                     }
@@ -93,7 +98,7 @@ export default class Res<T extends cc.Asset> {
 
             let onComplete = (err: Error, items: cc.AssetManager.RequestItem[]) => {
                 if (err) return reject(err);
-                cc.log(`预加载资源成功`);
+                cc.log('==>预加载资源成功<==');
                 this.asset = items;
                 resolve(this.asset);
             };

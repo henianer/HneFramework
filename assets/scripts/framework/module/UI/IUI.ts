@@ -11,6 +11,8 @@ export interface IUI {
     init();
     show();
     hide();
+    pause();
+    resume();
 }
 
 // export enum EUIType {

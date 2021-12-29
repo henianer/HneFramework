@@ -19,7 +19,7 @@ import UIBase from "./UIBase";
 export default class UIMgr extends Singleton<UIMgr> {
 
     private _uiStack: Stack<string> = new Stack();
-    private _uiDic: Dictionary<string, IUI> = new Dictionary();
+    private _uiDic: Dictionary<IUI> = new Dictionary();
 
     private _canvas: cc.Node;
     public get canvas(): cc.Node {
@@ -31,6 +31,10 @@ export default class UIMgr extends Singleton<UIMgr> {
 
     /** 初始化页面 */
     private async init(loadOptions: ILoadOptions, parent?: cc.Node): Promise<IUI> {
+        if (Object.keys(loadOptions).length === 0) {
+            cc.warn('==>初始化页面参数传入错误<==');
+            return null;
+        }
         let path = loadOptions.bundle + '/' + loadOptions.path;
         if (this._uiDic.containsKey(path)) {
             return this._uiDic.get(path);
@@ -46,17 +50,21 @@ export default class UIMgr extends Singleton<UIMgr> {
                     ui = component as IUI;
                     ui.init();
                 } else {
-                    cc.warn('当前物体脚本未继承UIBase脚本:' + component.name);
+                    cc.warn('==>当前物体脚本未继承UIBase脚本:' + component.name + '<==');
                 }
             } else {
-                cc.warn('当前物体未绑定继承UIBase的脚本:' + node.name);
+                cc.warn('==>当前物体未绑定继承UIBase的脚本:' + node.name + '<==');
             }
             return ui;
         }
     }
 
     /** 页面入栈(显示) */
-    public async push(loadOptions: ILoadOptions, parent?: cc.Node): Promise<IUI> {
+    public async show(loadOptions: ILoadOptions, parent?: cc.Node): Promise<IUI> {
+        if (Object.keys(loadOptions).length === 0) {
+            cc.warn('==>显示页面参数传入错误<==');
+            return null;
+        }
         let path = loadOptions.bundle + '/' + loadOptions.path;
         if (this._uiStack.count > 0) {
             let _path = this._uiStack.peek();
@@ -70,7 +78,7 @@ export default class UIMgr extends Singleton<UIMgr> {
     }
 
     /** 页面出栈(隐藏、返回) */
-    public pop() {
+    public hide() {
         if (this._uiStack.count <= 1) {
             return;
         }

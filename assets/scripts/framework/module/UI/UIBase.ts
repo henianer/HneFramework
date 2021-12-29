@@ -25,13 +25,35 @@ export default class UIBase extends cc.Component implements IUI {
     }
 
     init() {
+        cc.log('==>[' + this.node.name + ']初始化<==');
+        this.onInit();
     }
 
     show() {
+        cc.log('==>[' + this.node.name + ']显示<==');
         this.node.active = true;
+        this.onShow();
     }
 
     hide() {
+        cc.log('==>[' + this.node.name + ']隐藏<==');
         this.node.active = false;
+        this.onHide();
     }
+
+    pause() {
+        cc.log('==>[' + this.node.name + ']暂停<==');
+        this.onPause();
+    }
+
+    resume() {
+        cc.log('==>[' + this.node.name + ']恢复<==');
+        this.onResume();
+    }
+
+    protected onInit() { }
+    protected onShow() { }
+    protected onHide() { }
+    protected onPause() { }
+    protected onResume() { }
 }
