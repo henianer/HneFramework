@@ -1,3 +1,12 @@
+
+/*******************************************
+脚本: UIUtil
+时间: 2021-12-30 16:14
+作者: 何斌(1997_10_23@sina.com)
+描述:
+    UI工具
+*******************************************/
+
 import Dictionary from "../../structure/Dictionary";
 
 export default class UIUtil extends cc.Component {

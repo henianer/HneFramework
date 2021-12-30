@@ -9,53 +9,53 @@
 
 export default class Stack<T>{
 
-    private array: T[];
-    private maxCount: number;
-    private curCount: number;
+    private _array: T[];
+    private _maxCount: number;
+    private _curCount: number;
 
     constructor(maxCount?: number) {
-        this.array = [];
-        this.curCount = 0;
+        this._array = [];
+        this._curCount = 0;
         if (maxCount != null) {
-            this.maxCount = maxCount;
+            this._maxCount = maxCount;
         }
     }
 
     /** 入栈 */
     public push(...elements: T[]) {
         let newCount = elements.length;
-        if (this.maxCount && this.array.length + newCount > this.maxCount) {
+        if (this._maxCount && this._array.length + newCount > this._maxCount) {
             cc.warn('==>入栈后个数超出预设个数<==');
             return;
         }
-        this.array.push(...elements);
+        this._array.push(...elements);
     }
 
     /** 从栈顶取出元素 */
     public pop(): T {
-        return this.array.pop();
+        return this._array.pop();
     }
 
     /** 返回栈顶元素（不取出） */
     public peek() {
-        return this.array[this.array.length - 1];
+        return this._array[this._array.length - 1];
     }
 
     public get count() {
-        this.curCount = this.array.length;
-        return this.curCount;
+        this._curCount = this._array.length;
+        return this._curCount;
     }
 
     public isEmpty() {
-        return this.array.length === 0;
+        return this._array.length === 0;
     }
 
     public clear() {
-        this.array = [];
+        this._array = [];
     }
 
     public print() {
-        cc.log(this.array);
+        cc.log(this._array);
     }
 
 }

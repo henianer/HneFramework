@@ -7,14 +7,14 @@
     资源
 *******************************************/
 
-import { ELoadBundle, ELoadPreset, ILoadOptions } from "./ILoad";
+import { ELoadPreset, ILoadOptions } from "./ILoad";
 
 export default class Res<T extends cc.Asset> {
 
     /** 资源：加载-该类型资源或该类型资源的数组 预加载-该类型的非解析资源 */
-    private asset: T | T[] | cc.AssetManager.RequestItem[];
-    private readonly loadOptions: ILoadOptions | ILoadOptions[];
-    private readonly loadOption: ILoadOptions;
+    private _asset: T | T[] | cc.AssetManager.RequestItem[];
+    private readonly _loadOptions: ILoadOptions | ILoadOptions[];
+    private readonly _loadOption: ILoadOptions;
 
     public constructor(loadOptions: ILoadOptions | ILoadOptions[], loadOption: ILoadOptions = Object.create(null)) {
         if (loadOptions instanceof Array) {
@@ -30,8 +30,8 @@ export default class Res<T extends cc.Asset> {
                 return;
             }
         }
-        this.loadOptions = loadOptions;
-        this.loadOption = loadOption;
+        this._loadOptions = loadOptions;
+        this._loadOption = loadOption;
     }
 
     public load(): Promise<T>;
@@ -48,21 +48,21 @@ export default class Res<T extends cc.Asset> {
             }
 
             if (!loadOption) loadOption = Object.create(null);
-            Object.assign(loadOption, this.loadOption);
+            Object.assign(loadOption, this._loadOption);
 
             let onComplete = (err: Error, res: T) => {
                 if (err) return reject(err);
                 cc.log(`==>[${res.name}]加载成功<==`);
-                this.asset = res;
-                resolve(this.asset);
+                this._asset = res;
+                resolve(this._asset);
             };
 
             if (loadOption.preset === ELoadPreset.Remote) {
-                if (this.loadOptions instanceof Array) {
+                if (this._loadOptions instanceof Array) {
                     cc.warn('==>同时只能加载一个远程资源<==');
                     resolve(null);
                 } else {
-                    let url: string = this.loadOptions.url;
+                    let url: string = this._loadOptions.url;
                     if (url === '' || url == null) {
                         cc.warn('==>远程资源路径不合法<==');
                     } else {
@@ -71,7 +71,7 @@ export default class Res<T extends cc.Asset> {
                 }
             }
             else {
-                cc.assetManager.loadAny(this.loadOptions, loadOption, onProgress, onComplete)
+                cc.assetManager.loadAny(this._loadOptions, loadOption, onProgress, onComplete)
             }
         })
     }
@@ -94,24 +94,24 @@ export default class Res<T extends cc.Asset> {
             }
 
             if (!loadOption) loadOption = Object.create(null);
-            Object.assign(loadOption, this.loadOption);
+            Object.assign(loadOption, this._loadOption);
 
             let onComplete = (err: Error, items: cc.AssetManager.RequestItem[]) => {
                 if (err) return reject(err);
                 cc.log('==>预加载资源成功<==');
-                this.asset = items;
-                resolve(this.asset);
+                this._asset = items;
+                resolve(this._asset);
             };
 
-            cc.assetManager.preloadAny(this.loadOptions, loadOption, onProgress, onComplete);
+            cc.assetManager.preloadAny(this._loadOptions, loadOption, onProgress, onComplete);
         })
     }
 
     public releaseAsset() {
-        if (this.asset instanceof cc.Asset) {
-            cc.assetManager.releaseAsset(this.asset);
-        } else if (this.asset instanceof Array) {
-            this.asset.forEach(asset => {
+        if (this._asset instanceof cc.Asset) {
+            cc.assetManager.releaseAsset(this._asset);
+        } else if (this._asset instanceof Array) {
+            this._asset.forEach(asset => {
                 if (asset instanceof cc.Asset) {
                     cc.assetManager.releaseAsset(asset);
                 }

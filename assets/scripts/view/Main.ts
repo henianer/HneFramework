@@ -8,7 +8,7 @@
 *******************************************/
 
 import { ELoadBundle } from "../framework/module/load/ILoad";
-import UIMgr from "../framework/module/UI/UIMgr";
+import UIMgr from "../framework/module/ui/UIMgr";
 
 const { ccclass, property } = cc._decorator;
 

@@ -33,7 +33,7 @@ export default class Dragger extends cc.Component {
     public realtimeSet = false;
 
     @property
-    public _up = true;
+    private _up = true;
     @property({
         displayName: CC_DEV && '允许上移',
         tooltip: CC_DEV && '描述',
@@ -49,7 +49,7 @@ export default class Dragger extends cc.Component {
     }
 
     @property
-    public _down = true;
+    private _down = true;
     @property({
         displayName: CC_DEV && '允许下移',
         visible: CC_DEV && function () {
@@ -64,7 +64,7 @@ export default class Dragger extends cc.Component {
     }
 
     @property
-    public _left = true;
+    private _left = true;
     @property({
         displayName: CC_DEV && '允许左移',
         visible: CC_DEV && function () {
@@ -79,7 +79,7 @@ export default class Dragger extends cc.Component {
     }
 
     @property
-    public _right = true;
+    private _right = true;
     @property({
         displayName: CC_DEV && '允许右移',
         visible: CC_DEV && function () {

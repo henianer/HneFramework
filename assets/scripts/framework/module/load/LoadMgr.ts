@@ -6,18 +6,18 @@ import ResLoad from "./ResLoad";
 // TODO: 暂时实现本地bundle加载,远程加载未处理
 export default class LoadMgr extends Singleton<LoadMgr>{
 
-    private loader: ResLoad = null;
+    private _loader: ResLoad = null;
 
     public constructor() {
         super();
-        this.loader = new ResLoad();
+        this._loader = new ResLoad();
     }
 
     public loadImage(loadOptions: ILoadOptions) {
-        return this.loader.loadImage(loadOptions).load();
+        return this._loader.loadImage(loadOptions).load();
     }
 
     public loadPrefab(loadOptions: ILoadOptions) {
-        return this.loader.loadPrefab(loadOptions).load();
+        return this._loader.loadPrefab(loadOptions).load();
     }
 }

@@ -1,11 +1,15 @@
-import property = cc._decorator.property;
-import ccclass = cc._decorator.ccclass;
-import executeInEditMode = cc._decorator.executeInEditMode;
-import disallowMultiple = cc._decorator.disallowMultiple;
-import requireComponent = cc._decorator.requireComponent;
-import menu = cc._decorator.menu;
+
+/*******************************************
+脚本: RoundRectMask
+时间: 2021-12-30 16:06
+作者: 何斌(1997_10_23@sina.com)
+描述:
+    圆角遮罩
+*******************************************/
 
 cc.macro.ENABLE_WEBGL_ANTIALIAS = true;
+
+const { ccclass, menu, disallowMultiple, requireComponent, executeInEditMode, property } = cc._decorator;
 
 @ccclass()
 @executeInEditMode()
@@ -27,23 +31,23 @@ export class RoundRectMask extends cc.Component {
         this.updateMask(r);
     }
 
-    protected mask: cc.Mask = null;
+    protected _mask: cc.Mask = null;
+    protected _prePosition: cc.Vec3 = cc.Vec3.ZERO;
 
     protected onEnable(): void {
         this.updateMask(this.radius);
     }
 
     private updateMask(r: number) {
-        this.mask = this.getComponent(cc.Mask);
-        console.log(this.mask);
+        this._mask = this.getComponent(cc.Mask);
         let _radius = r >= 0 ? r : 0;
         if (_radius < 1) {
             _radius = Math.min(this.node.width, this.node.height) * _radius;
         }
-        this.mask["radius"] = _radius;
-        this.mask["onDraw"] = this.onDraw.bind(this.mask);
-        this.mask["_updateGraphics"] = this._updateGraphics.bind(this.mask);
-        this.mask.type = cc.Mask.Type.RECT;
+        this._mask["radius"] = _radius;
+        this._mask["onDraw"] = this.onDraw.bind(this._mask);
+        this._mask["_updateGraphics"] = this._updateGraphics.bind(this._mask);
+        this._mask.type = cc.Mask.Type.RECT;
     }
 
     private _updateGraphics() {
