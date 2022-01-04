@@ -17,6 +17,7 @@ export default class Audio {
     private static _musicIsPlaying: boolean = false;
     private static _musicVolume: number = 1; // 声音
     private static _musicNotMute: boolean = true; // 是否没静音
+
     private static _effectVolume: number = 1;
     private static _effectNotMute: boolean = true;
 
@@ -51,6 +52,7 @@ export default class Audio {
                     .to(fadeDuration, { musicVolume: 0 })
                     .call(() => {
                         this.musicVolume = tempMusicVolume;
+                        cc.audioEngine.stopMusic();
                         musicID = cc.audioEngine.playMusic(clip, loop);
                         if (callback) {
                             cc.audioEngine.setFinishCallback(musicID, callback);
@@ -78,7 +80,7 @@ export default class Audio {
         cc.audioEngine.resumeMusic();
     }
 
-    public static get musicIsPlaying():boolean{
+    public static get musicIsPlaying(): boolean {
         return this._musicIsPlaying;
     }
 
@@ -103,4 +105,50 @@ export default class Audio {
     }
 
     /****************************************音效**************************************************/
+
+    public static playEffect(clip: cc.AudioClip, loop: boolean = false, callback: Function): number {
+        if (!this._effectNotMute) return NaN;
+        if (!clip || !clip.loaded) return NaN;
+        let effectID: number = cc.audioEngine.playEffect(clip, loop);
+        if (callback) {
+            cc.audioEngine.setFinishCallback(effectID, callback);
+        }
+        return effectID;
+    }
+
+    public static stopEffect(effectID: number) {
+        cc.audioEngine.stopEffect(effectID);
+    }
+
+    public static stopAllEffects() {
+        cc.audioEngine.stopAllEffects();
+    }
+
+    public static pauseEffect(effectID: number) {
+        cc.audioEngine.pauseEffect(effectID);
+    }
+
+    public static pauseAllEffects() {
+        cc.audioEngine.pauseAllEffects();
+    }
+
+    public static resumeEffect(effectID: number) {
+        cc.audioEngine.resumeEffect(effectID);
+    }
+
+    public static resumeAllEffects() {
+        cc.audioEngine.resumeAllEffects();
+    }
+
+    public static stopAll() {
+        cc.audioEngine.stopAll();
+    }
+
+    public static uncache(clip: cc.AudioClip) {
+        cc.audioEngine.uncache(clip);
+    }
+
+    public static uncacheAll() {
+        cc.audioEngine.uncacheAll();
+    }
 }
