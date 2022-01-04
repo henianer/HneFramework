@@ -7,6 +7,8 @@
     声音
 *******************************************/
 
+import LocalStorage from "../../util/LocalStorage";
+
 const MUSIC_VOLUME = 'MUSIC_VOLUME';
 const MUSIC_NOT_MUTE = 'MUSIC_NOT_MUTE';
 const EFFECT_VOLUME = 'EFFECT_VOLUME';
@@ -22,10 +24,10 @@ export default class Audio {
     private static _effectNotMute: boolean = true;
 
     public static init() {
-        this._musicVolume = Number(localStorage.getItem(MUSIC_VOLUME)) || 1;
-        this._musicNotMute = Boolean(localStorage.getItem(MUSIC_NOT_MUTE)) || true;
-        this._effectVolume = Number(localStorage.getItem(EFFECT_VOLUME)) || 1;
-        this._effectNotMute = Boolean(localStorage.getItem(EFFECT_NOT_MUTE)) || true;
+        this._musicVolume = Number(LocalStorage.get(MUSIC_VOLUME)) || 1;
+        this._musicNotMute = Boolean(LocalStorage.get(MUSIC_NOT_MUTE)) || true;
+        this._effectVolume = Number(LocalStorage.get(EFFECT_VOLUME)) || 1;
+        this._effectNotMute = Boolean(LocalStorage.get(EFFECT_NOT_MUTE)) || true;
 
         cc.audioEngine.setMusicVolume(this._musicNotMute ? this._musicVolume : 0);
         cc.audioEngine.setEffectsVolume(this._effectNotMute ? this._effectVolume : 0);
@@ -91,7 +93,7 @@ export default class Audio {
     public static set musicVolume(volume: number) {
         this._musicVolume = volume;
         cc.audioEngine.setMusicVolume(volume);
-        localStorage.setItem(MUSIC_VOLUME, `${volume}`);
+        LocalStorage.set(MUSIC_VOLUME, `${volume}`);
     }
 
     public static get musicNotMute(): boolean {
@@ -101,11 +103,11 @@ export default class Audio {
     public static set musicNotMute(b: boolean) {
         this._musicNotMute = b;
         cc.audioEngine.setMusicVolume(b ? this._musicVolume : 0);
-        localStorage.setItem(MUSIC_NOT_MUTE, `${b}`);
+        LocalStorage.set(MUSIC_NOT_MUTE, `${b}`);
     }
 
     /****************************************音效**************************************************/
-
+    /** 播放音效 */
     public static playEffect(clip: cc.AudioClip, loop: boolean = false, callback: Function): number {
         if (!this._effectNotMute) return NaN;
         if (!clip || !clip.loaded) return NaN;
@@ -138,6 +140,26 @@ export default class Audio {
 
     public static resumeAllEffects() {
         cc.audioEngine.resumeAllEffects();
+    }
+
+    public static get effectVolume(): number {
+        return this._effectVolume;
+    }
+
+    public static set effectVolume(volume: number) {
+        this._effectVolume = volume;
+        cc.audioEngine.setEffectsVolume(volume);
+        LocalStorage.set(EFFECT_VOLUME, `${volume}`);
+    }
+
+    public static get effectNotMute(): boolean {
+        return this._effectNotMute;
+    }
+
+    public static set effectNotMute(b: boolean) {
+        this._effectNotMute = b;
+        cc.audioEngine.setEffectsVolume(b ? this._effectVolume : 0);
+        LocalStorage.set(EFFECT_NOT_MUTE, `${b}`);
     }
 
     public static stopAll() {
