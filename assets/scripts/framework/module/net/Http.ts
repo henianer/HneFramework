@@ -41,6 +41,10 @@ export default class Http {
         request.ontimeout = () => {
             console.log("request timeout:", url);
         };
+        request.onerror = (event: ProgressEvent) => {
+            cc.log(`[Http][Get][${url}][Error]`);
+            cc.log(event);
+        }
         request.send();
     }
 
@@ -59,6 +63,10 @@ export default class Http {
         request.ontimeout = () => {
             console.log("request timeout:", url);
         };
+        request.onerror = (event: ProgressEvent) => {
+            cc.log(`[Http][Post][${url}][Error]`);
+            cc.log(event);
+        }
         request.send(new Uint8Array([1, 2, 3, 4]));
     }
 

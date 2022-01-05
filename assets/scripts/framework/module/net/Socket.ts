@@ -101,7 +101,7 @@ export default class Socket {
 
     private onError(event: MessageEvent) {
         cc.log(`[WebSocket][${this._url}][Error]`);
-        // cc.log(event);
+        cc.log(event);
         if (this._socketReadyState == ESocketReadyState.Connecting) {
             this._socketReadyState = ESocketReadyState.Closed;
             if (this._webSocket) this._webSocket = null;
