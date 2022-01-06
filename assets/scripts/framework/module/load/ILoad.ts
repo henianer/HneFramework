@@ -16,13 +16,13 @@ export interface ILoad {
 
 /** 目标资源的Bundle */
 export enum ELoadBundle {
-    Resources = 'resources'
+    RESOURCES = 'resources'
 }
 
 /** 加载区域预设 */
 export enum ELoadPreset {
-    Local,
-    Remote
+    LOCAL,
+    REMOTE
 }
 
 

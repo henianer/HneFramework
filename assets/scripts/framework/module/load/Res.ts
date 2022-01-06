@@ -57,7 +57,7 @@ export default class Res<T extends cc.Asset> {
                 resolve(this._asset);
             };
 
-            if (loadOption.preset === ELoadPreset.Remote) {
+            if (loadOption.preset === ELoadPreset.REMOTE) {
                 if (this._loadOptions instanceof Array) {
                     cc.warn('==>同时只能加载一个远程资源<==');
                     resolve(null);
