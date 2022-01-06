@@ -75,6 +75,34 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
         }
     }
 
+    /** 发送 */
+    public send(data: any) {
+        if (this._socket) {
+            this._socket.send(data);
+        }
+        else if (this._http) {
+
+        }
+    }
+
+    public get isConnected(): boolean {
+        if (this._socket) {
+            return this._socket.isConnected;
+        }
+        else if (this._http) {
+            return null;
+        }
+    }
+
+    public get isConnecting(): boolean {
+        if (this._socket) {
+            return this._socket.isConnecting;
+        }
+        else if (this._http) {
+            return null;
+        }
+    }
+
     /*****************************INetworkDelegate接口****************************/
     /** 已连接 */
     public onConnected(data: any) {

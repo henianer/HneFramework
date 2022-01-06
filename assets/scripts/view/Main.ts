@@ -23,16 +23,19 @@ export default class Main extends cc.Component {
 
     public start() {
         UIMgr.instance(UIMgr).show({ path: 'prefabs/Home', bundle: ELoadBundle.RESOURCES });
-        let networkConnectData: INetworkConnectData = {
-            ip: '121.40.165.18',
-            port: 8800,
-            protocol: ENetworkProtocol.WS,
-            binaryType: ESocketBinaryType.ARRAY_BUFFER
-        };
-        Network.instance(Network).init(networkConnectData);
-        Network.instance(Network).connect();
-        setTimeout(() => {
-            Network.instance(Network).close();
-        }, 3000);
+        // let networkConnectData: INetworkConnectData = {
+        //     ip: '121.40.165.18',
+        //     port: 8800,
+        //     protocol: ENetworkProtocol.WS,
+        //     binaryType: ESocketBinaryType.ARRAY_BUFFER
+        // };
+        // Network.instance(Network).init(networkConnectData);
+        // Network.instance(Network).connect();
+        // setTimeout(() => {
+        //     Network.instance(Network).send('往服务器发送消息');
+        // }, 1000);
+        // setTimeout(() => {
+        //     Network.instance(Network).close();
+        // }, 3000);
     }
 }

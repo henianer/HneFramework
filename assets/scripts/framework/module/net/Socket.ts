@@ -50,6 +50,15 @@ export default class Socket {
         }
     }
 
+    public send(data: any) {
+        if (this._socketReadyState !== ESocketReadyState.CONNECTED ||
+            this._webSocket.readyState !== ESocketReadyState.CONNECTED ||
+            !this._webSocket) {
+            return;
+        }
+        this._webSocket.send(data);
+    }
+
     private onOpen(event: Event) {
         // cc.log(`[WebSocket][${this._url}][Connected]`);
         this._socketReadyState = ESocketReadyState.CONNECTED;
