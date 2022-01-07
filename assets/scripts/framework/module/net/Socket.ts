@@ -21,7 +21,7 @@ export default class Socket {
         this._url = url;
         this._binaryType = binaryType;
         this._delegate = delegate;
-        cc.log(`[WebSocket][${this._url}][Init]`);
+        // cc.log(`[WebSocket][${this._url}][Init]`);
     }
 
     public connect() {

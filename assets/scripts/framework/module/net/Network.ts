@@ -9,6 +9,8 @@
 *******************************************/
 
 import Singleton from "../../util/Singleton";
+import { EAllEvent } from "../event/EAllEvent";
+import { EventMgr } from "../event/EventMgr";
 import Http from "./Http";
 import { EHttpRequestType, ENetworkProtocol, ESocketBinaryType, INetworkConnectData, INetworkDelegate } from "./INetwork";
 import Socket from "./Socket";
@@ -52,6 +54,7 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
 
     /** 连接 */
     public connect() {
+        this.onConnecting();
         if (this._socket) {
             this._socket.init(this._url, this._socketBinaryType, this);
             this._socket.connect();
@@ -63,6 +66,9 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
                 this._http.post(this._url);
             }
         }
+        else {
+            cc.log('[Network Not Inited]')
+        }
     }
 
     /** 断开 */
@@ -73,6 +79,9 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
         else if (this._http) {
 
         }
+        else {
+            cc.log('[Network Already Closed]')
+        }
     }
 
     /** 发送 */
@@ -82,6 +91,9 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
         }
         else if (this._http) {
 
+        }
+        else {
+            cc.log('[Network Already Closed]')
         }
     }
 
@@ -103,24 +115,41 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
         }
     }
 
+    private dataReset() {
+        this._ip = null;
+        this._port = null;
+        this._protocol = null;
+        this._socket = null;
+        this._socketBinaryType = null;
+        this._url = null;
+        this._http = null;
+        this._httpRequestType = null;
+    }
+
     /*****************************INetworkDelegate接口****************************/
+    /** 连接中 */
+    public onConnecting() {
+        cc.log('[Network Connecting]');
+    }
+
     /** 已连接 */
-    public onConnected(data: any) {
+    public onConnected(data: Event) {
         cc.log('[Network Connected]');
     }
 
     /** 连接失败 */
-    public onConnectFailed(data: any) {
+    public onConnectFailed(data: ErrorEvent) {
         cc.log('[Network ConnectFailed]');
     }
 
     /** 连接断开 */
-    public onDisconnected(data: any) {
+    public onDisconnected(data: CloseEvent) {
         cc.log('[Network Disconnected]');
+        this.dataReset();
     }
 
     /** 消息 */
-    public onMessage(data: any) {
+    public onMessage(data: MessageEvent) {
         cc.log('[Network Message]');
         cc.log(data);
     }

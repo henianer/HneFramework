@@ -1,0 +1,9 @@
+export enum EAllEvent {
+
+    // 网络
+    NET_CONNECTED,
+    NET_CONNECT_FAILED,
+    NET_DISCONNECTED,
+    NET_MESSAGE,
+    NET_RECONNECTED
+}
