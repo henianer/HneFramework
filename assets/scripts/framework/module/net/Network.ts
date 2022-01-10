@@ -12,7 +12,7 @@ import Singleton from "../../util/Singleton";
 import { EAllEvent } from "../event/EAllEvent";
 import EventMgr from "../event/EventMgr";
 import Http from "./Http";
-import { EHttpRequestType, ENetworkProtocol, ESocketBinaryType, INetworkConnectData, INetworkDelegate } from "./INetwork";
+import { EHttpRequestType, ENetworkProtocol, ESocketBinaryType, INetworkConnectData, INetworkDelegate, RECONNECT_TRY_TIMES } from "./INetwork";
 import Socket from "./Socket";
 
 export default class Network extends Singleton<Network> implements INetworkDelegate {
@@ -29,8 +29,12 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     private _http: Http = null;
     private _httpRequestType: EHttpRequestType = null;
 
+    private _reconnectTryTimes = 0;
+    private _isReconnected = false;
+
     /** 初始化 */
     public init(networkConnectData: INetworkConnectData) {
+        this.dataReset();
         if (networkConnectData.protocol === ENetworkProtocol.WS || networkConnectData.protocol === ENetworkProtocol.WSS) {
             // websocket连接
             if (networkConnectData.url) this._url = networkConnectData.url;
@@ -124,6 +128,16 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
         this._url = null;
         this._http = null;
         this._httpRequestType = null;
+        this._reconnectTryTimes = 0;
+        this._isReconnected = false;
+    }
+
+    private startHeartbeat() {
+
+    }
+
+    private stopHeartbeat() {
+
     }
 
     /*****************************INetworkDelegate接口****************************/
@@ -134,14 +148,29 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
 
     /** 已连接 */
     public onConnected(data: Event) {
-        cc.log('[Network Connected]');
-        EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECTED, data);
+        if (this._reconnectTryTimes > 0) {
+            cc.log('[Network Reconnected]');
+            this._reconnectTryTimes = 0;
+            EventMgr.instance(EventMgr).emit(EAllEvent.NET_RECONNECTED, data);
+        } else {
+            cc.log('[Network Connected]');
+            EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECTED, data);
+        }
     }
 
     /** 连接失败 */
     public onConnectFailed(data: ErrorEvent) {
-        cc.log('[Network ConnectFailed]');
-        EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECT_FAILED, data);
+        if (this._reconnectTryTimes < RECONNECT_TRY_TIMES) {
+            cc.log('[Network ConnectFailed,Try Again]');
+            this._reconnectTryTimes++;
+            // TODO: 何斌(1997_10_23@sina.com) 2022-01-10 17:58
+            // TODO: 封装延时
+            setTimeout(this.connect, 500);
+        } else {
+            cc.log('[Network ConnectFailed]');
+            this._reconnectTryTimes = 0;
+            EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECT_FAILED, data);
+        }
     }
 
     /** 连接断开 */
