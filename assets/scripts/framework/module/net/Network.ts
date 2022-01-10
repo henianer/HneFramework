@@ -10,7 +10,7 @@
 
 import Singleton from "../../util/Singleton";
 import { EAllEvent } from "../event/EAllEvent";
-import { EventMgr } from "../event/EventMgr";
+import EventMgr from "../event/EventMgr";
 import Http from "./Http";
 import { EHttpRequestType, ENetworkProtocol, ESocketBinaryType, INetworkConnectData, INetworkDelegate } from "./INetwork";
 import Socket from "./Socket";
@@ -85,9 +85,9 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     }
 
     /** 发送 */
-    public send(data: any) {
+    public send(param: any) {
         if (this._socket) {
-            this._socket.send(data);
+            this._socket.send(param);
         }
         else if (this._http) {
 
@@ -135,22 +135,25 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     /** 已连接 */
     public onConnected(data: Event) {
         cc.log('[Network Connected]');
+        EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECTED, data);
     }
 
     /** 连接失败 */
     public onConnectFailed(data: ErrorEvent) {
         cc.log('[Network ConnectFailed]');
+        EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECT_FAILED, data);
     }
 
     /** 连接断开 */
     public onDisconnected(data: CloseEvent) {
         cc.log('[Network Disconnected]');
         this.dataReset();
+        EventMgr.instance(EventMgr).emit(EAllEvent.NET_DISCONNECTED, data);
     }
 
     /** 消息 */
     public onMessage(data: MessageEvent) {
         cc.log('[Network Message]');
-        cc.log(data);
+        EventMgr.instance(EventMgr).emit(EAllEvent.NET_MESSAGE, data);
     }
 }

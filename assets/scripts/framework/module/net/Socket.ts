@@ -56,7 +56,7 @@ export default class Socket {
             !this._webSocket) {
             return;
         }
-        this._webSocket.send(data);
+        this._webSocket.send(JSON.stringify(data));
     }
 
     private onOpen(event: Event) {
@@ -68,7 +68,17 @@ export default class Socket {
     private onMessage(event: MessageEvent) {
         // cc.log(`[WebSocket][${this._url}][Message]`);
         // cc.log(event);
-        this._delegate && this._delegate.onMessage && this._delegate.onMessage(event.data);
+        let data = event.data;
+        if (typeof (data) !== 'undefined' && data instanceof Blob) { // Blob转ArrayBuffer
+            let reader = new FileReader();
+            reader.onload = () => {
+                data = reader.result;
+                this._delegate && this._delegate.onMessage && this._delegate.onMessage(data);
+            };
+            reader.readAsArrayBuffer(data);
+        } else {
+            this._delegate && this._delegate.onMessage && this._delegate.onMessage(JSON.parse(data));
+        }
     }
 
     private onError(event: ErrorEvent) {

@@ -7,6 +7,15 @@
     网络接口
 *******************************************/
 
+/** ip或者域名 */
+export const IP_OR_DOMAIN = 'henianer.cn'; // 47.97.35.144  henianer.cn
+
+/** 网络的端口 */
+export enum ENetworkPort {
+    MESSAGE_SERVER = 8888, // 消息传递端口
+    DATABASE_SERVER = 0, // 数据库端口
+}
+
 /** 网络委托 */
 export interface INetworkDelegate {
     onConnected: Function;
