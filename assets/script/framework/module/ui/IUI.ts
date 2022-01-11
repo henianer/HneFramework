@@ -8,9 +8,9 @@
 *******************************************/
 
 export interface IUI {
-    init();
-    show();
-    hide();
-    pause();
-    resume();
+    initUI();
+    showUI();
+    hideUI();
+    pauseUI();
+    resumeUI();
 }

@@ -13,6 +13,22 @@ export const IP_OR_DOMAIN = 'henianer.cn'; // 47.97.35.144  henianer.cn
 /** 尝试重连次数 */
 export const RECONNECT_TRY_TIMES = 5;
 
+/** 尝试重连间隔 */
+export const RECONNECT_TRY_INTERVAL = 0.5;
+
+/** 发送的数据类型 */
+export enum ENetworkSendType {
+    KEEP_NETWORK,
+    MESSAGE_CHAT,
+    MESSAGE_COMMAND,
+}
+
+/** 发送的数据 */
+export interface INetworkSendData{
+    type:ENetworkSendType;
+    data:any
+}
+
 /** 心跳包间隔 */
 export const HEARTBEAT_INTERVAL = 10;
 

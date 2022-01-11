@@ -24,36 +24,36 @@ export default class UIBase extends cc.Component implements IUI {
         return this._uiUtil;
     }
 
-    init() {
+    initUI() {
         cc.log('==>[' + this.node.name + ']初始化<==');
-        this.onInit();
+        this.onInitUI();
     }
 
-    show() {
+    showUI() {
         cc.log('==>[' + this.node.name + ']显示<==');
         this.node.active = true;
-        this.onShow();
+        this.onShowUI();
     }
 
-    hide() {
+    hideUI() {
         cc.log('==>[' + this.node.name + ']隐藏<==');
         this.node.active = false;
-        this.onHide();
+        this.onHideUI();
     }
 
-    pause() {
+    pauseUI() {
         cc.log('==>[' + this.node.name + ']暂停<==');
-        this.onPause();
+        this.onPauseUI();
     }
 
-    resume() {
+    resumeUI() {
         cc.log('==>[' + this.node.name + ']恢复<==');
-        this.onResume();
+        this.onResumeUI();
     }
 
-    protected onInit() { }
-    protected onShow() { }
-    protected onHide() { }
-    protected onPause() { }
-    protected onResume() { }
+    protected onInitUI() { }
+    protected onShowUI() { }
+    protected onHideUI() { }
+    protected onPauseUI() { }
+    protected onResumeUI() { }
 }

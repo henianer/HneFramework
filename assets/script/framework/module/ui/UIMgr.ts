@@ -48,7 +48,7 @@ export default class UIMgr extends Singleton<UIMgr> {
                     if (parent) node.parent = parent;
                     else node.parent = this.canvas;
                     ui = component as IUI;
-                    ui.init();
+                    ui.initUI();
                 } else {
                     cc.warn('==>当前物体脚本未继承UIBase脚本:' + component.name + '<==');
                 }
@@ -68,10 +68,10 @@ export default class UIMgr extends Singleton<UIMgr> {
         let path = loadOptions.bundle + '/' + loadOptions.path;
         if (this._uiStack.count > 0) {
             let _path = this._uiStack.peek();
-            this._uiDic.get(_path).hide();
+            this._uiDic.get(_path).hideUI();
         }
         let ui: IUI = await this.init(loadOptions, parent);
-        ui.show();
+        ui.showUI();
         this._uiStack.push(path);
         this._uiDic.add(path, ui);
         return ui;
@@ -83,9 +83,9 @@ export default class UIMgr extends Singleton<UIMgr> {
             return;
         }
         let _path = this._uiStack.pop();
-        this._uiDic.get(_path).hide();
+        this._uiDic.get(_path).hideUI();
 
         _path = this._uiStack.peek();
-        this._uiDic.get(_path).show();
+        this._uiDic.get(_path).showUI();
     }
 }

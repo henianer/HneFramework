@@ -31,7 +31,7 @@ export interface ILoadOptions {
     uuid?: string;
     url?: string;
     path?: string;
-    bundle?: string;
+    bundle?: ELoadBundle;
     type?: typeof cc.Asset;
     preset?: ELoadPreset;
 }

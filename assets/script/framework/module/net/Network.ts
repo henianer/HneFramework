@@ -12,7 +12,7 @@ import Singleton from "../../util/Singleton";
 import { EAllEvent } from "../event/EAllEvent";
 import EventMgr from "../event/EventMgr";
 import Http from "./Http";
-import { EHttpRequestType, ENetworkProtocol, ESocketBinaryType, INetworkConnectData, INetworkDelegate, RECONNECT_TRY_TIMES } from "./INetwork";
+import { EHttpRequestType, ENetworkProtocol, ENetworkSendType, ESocketBinaryType, HEARTBEAT_INTERVAL, INetworkConnectData, INetworkDelegate, INetworkSendData, RECONNECT_TRY_INTERVAL, RECONNECT_TRY_TIMES } from "./INetwork";
 import Socket from "./Socket";
 
 export default class Network extends Singleton<Network> implements INetworkDelegate {
@@ -30,7 +30,7 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     private _httpRequestType: EHttpRequestType = null;
 
     private _reconnectTryTimes = 0;
-    private _isReconnected = false;
+    private _heartbeatTimeout: number = null;
 
     /** 初始化 */
     public init(networkConnectData: INetworkConnectData) {
@@ -89,7 +89,7 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     }
 
     /** 发送 */
-    public send(param: any) {
+    public send(param: INetworkSendData) {
         if (this._socket) {
             this._socket.send(param);
         }
@@ -129,15 +129,22 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
         this._http = null;
         this._httpRequestType = null;
         this._reconnectTryTimes = 0;
-        this._isReconnected = false;
+        this._heartbeatTimeout = null;
     }
 
     private startHeartbeat() {
-
+        this.stopHeartbeat();
+        this._heartbeatTimeout = setTimeout(() => {
+            let sendData: INetworkSendData = {
+                type: ENetworkSendType.KEEP_NETWORK,
+                data: ''
+            }
+            this.send(sendData);
+        }, HEARTBEAT_INTERVAL * 1000);
     }
 
     private stopHeartbeat() {
-
+        if (this._heartbeatTimeout) clearTimeout(this._heartbeatTimeout);
     }
 
     /*****************************INetworkDelegate接口****************************/
@@ -147,42 +154,49 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     }
 
     /** 已连接 */
-    public onConnected(data: Event) {
+    public onConnected(msg: Event) {
+        this.startHeartbeat();
         if (this._reconnectTryTimes > 0) {
             cc.log('[Network Reconnected]');
             this._reconnectTryTimes = 0;
-            EventMgr.instance(EventMgr).emit(EAllEvent.NET_RECONNECTED, data);
+            EventMgr.instance(EventMgr).emit(EAllEvent.NET_RECONNECTED, msg);
         } else {
             cc.log('[Network Connected]');
-            EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECTED, data);
+            EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECTED, msg);
         }
     }
 
     /** 连接失败 */
-    public onConnectFailed(data: ErrorEvent) {
+    public onConnectFailed(msg: ErrorEvent) {
+        this.stopHeartbeat();
         if (this._reconnectTryTimes < RECONNECT_TRY_TIMES) {
-            cc.log('[Network ConnectFailed,Try Again]');
+            cc.error('[Network ConnectFailed,Try Again]');
             this._reconnectTryTimes++;
-            // TODO: 何斌(1997_10_23@sina.com) 2022-01-10 17:58
-            // TODO: 封装延时
-            setTimeout(this.connect, 500);
+            setTimeout(this.connect, RECONNECT_TRY_INTERVAL * 1000);
         } else {
-            cc.log('[Network ConnectFailed]');
+            cc.error('[Network ConnectFailed]');
             this._reconnectTryTimes = 0;
-            EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECT_FAILED, data);
+            EventMgr.instance(EventMgr).emit(EAllEvent.NET_CONNECT_FAILED, msg);
         }
     }
 
     /** 连接断开 */
-    public onDisconnected(data: CloseEvent) {
+    public onDisconnected(msg: CloseEvent) {
         cc.log('[Network Disconnected]');
+        this.stopHeartbeat();
         this.dataReset();
-        EventMgr.instance(EventMgr).emit(EAllEvent.NET_DISCONNECTED, data);
+        EventMgr.instance(EventMgr).emit(EAllEvent.NET_DISCONNECTED, msg);
     }
 
     /** 消息 */
-    public onMessage(data: MessageEvent) {
-        cc.log('[Network Message]');
-        EventMgr.instance(EventMgr).emit(EAllEvent.NET_MESSAGE, data);
+    public onMessage(msg: INetworkSendData) {
+        this.startHeartbeat();
+        if (msg.type === ENetworkSendType.KEEP_NETWORK) {
+            cc.log('[Network Keep]');
+        }
+        else {
+            cc.log('[Network Message]');
+            EventMgr.instance(EventMgr).emit(EAllEvent.NET_MESSAGE, msg);
+        }
     }
 }
