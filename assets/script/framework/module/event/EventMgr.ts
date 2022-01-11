@@ -16,18 +16,18 @@ interface EventData {
 
 export default class EventMgr extends Singleton<EventMgr>{
 
-    private events: Dictionary<EventData> = new Dictionary();
+    private _events: Dictionary<EventData> = new Dictionary();
 
     public on(eventName: EAllEvent, callback: Function, target: any) {
-        if (this.events.containsKey(eventName)) {
-            let callbacks = this.events.get(eventName).callbacks;
+        if (this._events.containsKey(eventName)) {
+            let callbacks = this._events.get(eventName).callbacks;
             let isExistCallback = false;
             let isExistTarget = false;
             for (let i = 0; i < callbacks.length; i++) {
                 if (callbacks[i].callback === callback && callbacks[i].target === target) {
                     cc.log(`[存在${eventName},存在回调,存在指向,进行覆盖]`);
-                    this.events.get(eventName).callbacks[i].callback = callback;
-                    this.events.get(eventName).callbacks[i].target = target;
+                    this._events.get(eventName).callbacks[i].callback = callback;
+                    this._events.get(eventName).callbacks[i].target = target;
                     isExistCallback = true;
                     isExistTarget = true;
                     break;
@@ -35,22 +35,22 @@ export default class EventMgr extends Singleton<EventMgr>{
             }
             if (!isExistCallback && !isExistTarget) {
                 cc.log(`[存在${eventName},不存在回调,不存在指向,进行添加]`);
-                this.events.get(eventName).callbacks.push({ callback, target });
+                this._events.get(eventName).callbacks.push({ callback, target });
             }
             else if (isExistCallback && !isExistTarget) {
                 cc.log(`[存在${eventName},存在回调,不存在指向,进行添加]`);
-                this.events.get(eventName).callbacks.push({ callback, target });
+                this._events.get(eventName).callbacks.push({ callback, target });
             }
         }
         else {
             cc.log(`[不存在${eventName},进行注册添加]`);
-            this.events.add(eventName, { callbacks: [{ callback, target }] });
+            this._events.add(eventName, { callbacks: [{ callback, target }] });
         }
     }
 
     public emit(eventName: EAllEvent, param: any) {
-        if (this.events.containsKey(eventName)) {
-            let callbacks = this.events.get(eventName).callbacks;
+        if (this._events.containsKey(eventName)) {
+            let callbacks = this._events.get(eventName).callbacks;
             for (let i = 0; i < callbacks.length; i++) {
                 let callback = callbacks[i].callback;
                 let target = callbacks[i].target;
@@ -63,22 +63,22 @@ export default class EventMgr extends Singleton<EventMgr>{
     }
 
     public off(eventName: EAllEvent, callback: Function, target: any) {
-        if (this.events.containsKey(eventName)) {
-            let callbacks = this.events.get(eventName).callbacks;
+        if (this._events.containsKey(eventName)) {
+            let callbacks = this._events.get(eventName).callbacks;
             let isExistCallback = false;
             let isExistTarget = false;
             for (let i = 0; i < callbacks.length; i++) {
                 if (callbacks[i].callback === callback && callbacks[i].target === target) {
                     cc.log(`[存在${eventName},存在回调,存在指向,进行注销]`);
-                    this.events.get(eventName).callbacks.splice(i, 1);
+                    this._events.get(eventName).callbacks.splice(i, 1);
                     isExistCallback = true;
                     isExistTarget = true;
                     break;
                 }
             }
-            if (this.events.get(eventName).callbacks.length === 0) {
+            if (this._events.get(eventName).callbacks.length === 0) {
                 cc.log(`[${eventName}监听回调长度为0,注销此监听]`);
-                this.events.delete(eventName);
+                this._events.delete(eventName);
             }
             if (!isExistCallback) {
                 cc.log(`[存在${eventName},不存在回调,注销失败]`);

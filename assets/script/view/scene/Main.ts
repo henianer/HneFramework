@@ -1,5 +1,4 @@
 import Path from "../../config/Path";
-import { ELoadBundle, ILoadOptions } from "../../framework/module/load/ILoad";
 import UIMgr from "../../framework/module/ui/UIMgr";
 
 

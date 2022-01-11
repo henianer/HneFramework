@@ -11,25 +11,25 @@ import Dictionary from "../../structure/Dictionary";
 
 export default class UIUtil extends cc.Component {
 
-    private uiData: Dictionary<UIUtilData>;
+    private _uiData: Dictionary<UIUtilData>;
 
     public init() {
-        this.uiData = new Dictionary();
+        this._uiData = new Dictionary();
         this.node.children.forEach((child) => {
-            this.uiData.add(child.name, new UIUtilData(child));
+            this._uiData.add(child.name, new UIUtilData(child));
         })
     }
 
     public get(path: string): UIUtilData {
-        if (this.uiData.containsKey(path)) {
-            return this.uiData.get(path);
+        if (this._uiData.containsKey(path)) {
+            return this._uiData.get(path);
         } else {
             let nodeFinded = cc.find(path, this.node);
             if (nodeFinded == null) {
                 cc.warn('无法按照路径找到物体,路径:' + path);
             } else {
-                this.uiData.add(path, new UIUtilData(nodeFinded));
-                return this.uiData.get(path);
+                this._uiData.add(path, new UIUtilData(nodeFinded));
+                return this._uiData.get(path);
             }
         }
     }

@@ -15,6 +15,7 @@ import LoadMgr from "../../framework/module/load/LoadMgr";
 import { ENetworkPort, ENetworkProtocol, ENetworkSendType, ESocketBinaryType, INetworkConnectData, INetworkSendData, IP_OR_DOMAIN } from "../../framework/module/net/INetwork";
 import Network from "../../framework/module/net/Network";
 import UIBase from "../../framework/module/ui/UIBase";
+import ChatRecord from "../widget/ChatRecord";
 
 
 
@@ -24,19 +25,23 @@ const { ccclass, property } = cc._decorator;
 export default class ChatRoom extends UIBase {
 
     @property(cc.EditBox)
-    public input: cc.EditBox = null;
+    public eb_input: cc.EditBox = null;
 
     @property(cc.Button)
-    public webSocketSend: cc.Button = null;
+    public bt_webSocketSend: cc.Button = null;
 
     @property(cc.Button)
-    public webSocketConnect: cc.Button = null;
+    public bt_webSocketConnect: cc.Button = null;
 
     @property(cc.Button)
-    public webSocketClose: cc.Button = null;
+    public bt_webSocketClose: cc.Button = null;
 
-    private chatRecordNodePool: cc.NodePool = null;
-    private chatRecordPrefab: cc.Prefab = null;
+    @property(cc.Node)
+    public nd_chatRecordContent: cc.Node = null;
+
+    private _np_chatRecord: cc.NodePool = null;
+    private _pf_chatRecord: cc.Prefab = null;
+    private _ar_chatRecord: string[] = [];
 
     private on() {
         EventMgr.instance(EventMgr).on(EAllEvent.NET_CONNECTED, this.onConnected, this);
@@ -60,9 +65,9 @@ export default class ChatRoom extends UIBase {
     }
 
     public async init() {
-        this.chatRecordNodePool = new cc.NodePool('chatRecord');
-        this.chatRecordPrefab = await LoadMgr.instance(LoadMgr).loadPrefab(Path.CHAT_RECORD);
-        this.chatRecordNodePool.put(cc.instantiate(this.chatRecordPrefab));
+        this._np_chatRecord = new cc.NodePool('chatRecord');
+        this._pf_chatRecord = await LoadMgr.instance(LoadMgr).loadPrefab(Path.CHAT_RECORD);
+        this._np_chatRecord.put(cc.instantiate(this._pf_chatRecord));
     }
 
     protected onHideUI() {
@@ -71,22 +76,25 @@ export default class ChatRoom extends UIBase {
 
     /** 更新UI */
     private updateUI(isConnected: boolean) {
-        this.webSocketConnect.interactable = !isConnected;
-        this.webSocketClose.interactable = isConnected;
-        this.webSocketSend.interactable = isConnected;
-        this.input.placeholder = isConnected ? '' : '请先连接网络...';
-        this.input.enabled = isConnected;
+        this.bt_webSocketConnect.interactable = !isConnected;
+        this.bt_webSocketClose.interactable = isConnected;
+        this.bt_webSocketSend.interactable = isConnected;
+        this.eb_input.placeholder = isConnected ? '' : '请先连接网络...';
+        this.eb_input.enabled = isConnected;
     }
 
     /** 更新聊天记录视图 */
-    private updateChatRecordView() {
+    private updateChatRecordView(data: string) {
         let chatRecordNode: cc.Node = null;
-        if (this.chatRecordNodePool.size() > 0) {
-            chatRecordNode = this.chatRecordNodePool.get();
+        if (this._np_chatRecord.size() > 0) {
+            chatRecordNode = this._np_chatRecord.get();
         }
         else {
-            chatRecordNode = cc.instantiate(this.chatRecordPrefab);
+            chatRecordNode = cc.instantiate(this._pf_chatRecord);
         }
+        chatRecordNode.getComponent(ChatRecord).string = data;
+        this._ar_chatRecord.push(data);
+        chatRecordNode.parent = this.nd_chatRecordContent;
     }
 
     private onclickWebSocketConnect(event?: cc.Event, param?: string) {
@@ -103,7 +111,7 @@ export default class ChatRoom extends UIBase {
     private onclickWebSocketSend(event?: cc.Event, param?: string) {
         let sendData: INetworkSendData = {
             type: ENetworkSendType.MESSAGE_CHAT,
-            data: this.input.string
+            data: this.eb_input.string
         }
         Network.instance(Network).send(sendData);
     }
@@ -130,8 +138,9 @@ export default class ChatRoom extends UIBase {
 
     /** 消息 */
     private onMessage(msg: INetworkSendData) {
-        cc.log(msg.data);
+        // cc.log(msg.data);
         if (msg.type === ENetworkSendType.MESSAGE_CHAT) {
+            this.updateChatRecordView(msg.data);
         }
     }
 
