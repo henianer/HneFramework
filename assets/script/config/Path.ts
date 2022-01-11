@@ -9,7 +9,10 @@
 
 import { ELoadBundle, ILoadOptions } from "../framework/module/load/ILoad";
 
-let Path = {
+let Path: {
+    CHAT_ROOM: ILoadOptions,
+    CHAT_RECORD: ILoadOptions,
+} = {
     CHAT_ROOM: { path: 'prefab/dialog/ChatRoom', bundle: ELoadBundle.RESOURCES },
     CHAT_RECORD: { path: 'prefab/widget/ChatRecord', bundle: ELoadBundle.RESOURCES }
 }
