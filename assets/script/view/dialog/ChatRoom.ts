@@ -39,9 +39,13 @@ export default class ChatRoom extends UIBase {
     @property(cc.Node)
     public nd_chatRecordContent: cc.Node = null;
 
+    @property(cc.ScrollView)
+    public sv_chatRecordView: cc.ScrollView = null;
+
     private _np_chatRecord: cc.NodePool = null;
     private _pf_chatRecord: cc.Prefab = null;
-    private _ar_chatRecord: string[] = [];
+    private _ar_str_chatRecord: string[] = [];
+    private _ar_nd_chatRecord: cc.Node[] = [];
 
     private on() {
         EventMgr.instance(EventMgr).on(EAllEvent.NET_CONNECTED, this.onConnected, this);
@@ -80,6 +84,7 @@ export default class ChatRoom extends UIBase {
         this.bt_webSocketClose.interactable = isConnected;
         this.bt_webSocketSend.interactable = isConnected;
         this.eb_input.placeholder = isConnected ? '' : '请先连接网络...';
+        this.eb_input.string = '';
         this.eb_input.enabled = isConnected;
     }
 
@@ -93,8 +98,13 @@ export default class ChatRoom extends UIBase {
             chatRecordNode = cc.instantiate(this._pf_chatRecord);
         }
         chatRecordNode.getComponent(ChatRecord).string = data;
-        this._ar_chatRecord.push(data);
         chatRecordNode.parent = this.nd_chatRecordContent;
+        this._ar_str_chatRecord.push(data);
+        this._ar_nd_chatRecord.push(chatRecordNode);
+        if (this._ar_nd_chatRecord.length > 30) {
+            let firstChatRecordNode: cc.Node = this._ar_nd_chatRecord.shift();
+            this._np_chatRecord.put(firstChatRecordNode);
+        }
     }
 
     private onclickWebSocketConnect(event?: cc.Event, param?: string) {
