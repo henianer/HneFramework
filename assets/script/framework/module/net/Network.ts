@@ -34,7 +34,7 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
 
     /** 初始化 */
     public init(networkConnectData: INetworkConnectData) {
-        this.dataReset();
+        // this.dataReset();
         if (networkConnectData.protocol === ENetworkProtocol.WS || networkConnectData.protocol === ENetworkProtocol.WSS) {
             // websocket连接
             if (networkConnectData.url) this._url = networkConnectData.url;
@@ -119,27 +119,28 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
         }
     }
 
-    private dataReset() {
-        this._ip = null;
-        this._port = null;
-        this._protocol = null;
-        this._socket = null;
-        this._socketBinaryType = null;
-        this._url = null;
-        this._http = null;
-        this._httpRequestType = null;
-        this._reconnectTryTimes = 0;
-        this._heartbeatTimeout = null;
-    }
+    // private dataReset() {
+    //     this._ip = null;
+    //     this._port = null;
+    //     this._protocol = null;
+    //     this._socket = null;
+    //     this._socketBinaryType = null;
+    //     this._url = null;
+    //     this._http = null;
+    //     this._httpRequestType = null;
+    //     this._reconnectTryTimes = 0;
+    //     this._heartbeatTimeout = null;
+    // }
 
     private startHeartbeat() {
-        this.stopHeartbeat();
-        this._heartbeatTimeout = setTimeout(() => {
+        let self = this;
+        self.stopHeartbeat();
+        self._heartbeatTimeout = setTimeout(() => {
             let sendData: INetworkSendData = {
                 type: ENetworkSendType.KEEP_NETWORK,
                 data: ''
             }
-            this.send(sendData);
+            self.send(sendData);
         }, HEARTBEAT_INTERVAL * 1000);
     }
 
@@ -169,10 +170,10 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     /** 连接失败 */
     public onConnectFailed(msg: ErrorEvent) {
         this.stopHeartbeat();
+        this._reconnectTryTimes++;
         if (this._reconnectTryTimes < RECONNECT_TRY_TIMES) {
             cc.error('[Network ConnectFailed,Try Again]');
-            this._reconnectTryTimes++;
-            setTimeout(this.connect, RECONNECT_TRY_INTERVAL * 1000);
+            this.connect();
         } else {
             cc.error('[Network ConnectFailed]');
             this._reconnectTryTimes = 0;
@@ -184,7 +185,7 @@ export default class Network extends Singleton<Network> implements INetworkDeleg
     public onDisconnected(msg: CloseEvent) {
         cc.log('[Network Disconnected]');
         this.stopHeartbeat();
-        this.dataReset();
+        // this.dataReset();
         EventMgr.instance(EventMgr).emit(EAllEvent.NET_DISCONNECTED, msg);
     }
 
