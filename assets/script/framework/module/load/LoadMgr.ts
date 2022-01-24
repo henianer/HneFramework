@@ -13,11 +13,11 @@ export default class LoadMgr extends Singleton<LoadMgr>{
         this._loader = new ResLoad();
     }
 
-    public loadImage(loadOptions: ILoadOptions) {
-        return this._loader.loadImage(loadOptions).load();
+    public loadImage(loadOptions: ILoadOptions, loadOption?: ILoadOptions) {
+        return this._loader.loadImage(loadOptions).load(loadOption);
     }
 
-    public loadPrefab(loadOptions: ILoadOptions) {
-        return this._loader.loadPrefab(loadOptions).load();
+    public loadPrefab(loadOptions: ILoadOptions, loadOption?: ILoadOptions) {
+        return this._loader.loadPrefab(loadOptions).load(loadOption);
     }
 }

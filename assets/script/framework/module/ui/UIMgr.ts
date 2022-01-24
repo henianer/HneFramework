@@ -66,7 +66,7 @@ export default class UIMgr extends Singleton<UIMgr> {
             return null;
         }
         let path = loadOptions.bundle + '/' + loadOptions.path;
-        if (this._uiStack.count > 0) {
+        if (this._uiStack.count > 0 && loadOptions.hideOther) {
             let _path = this._uiStack.peek();
             this._uiDic.get(_path).hideUI();
         }

@@ -79,8 +79,7 @@ class UIUtilData {
         if (this.button == null) {
             return cc.warn('==>当前节点没有按钮组件:' + this.node.name + '<==');
         }
-        // TODO: 何斌(1997_10_23@sina.com) 2021-12-28 15:01
-        // TODO: 按钮回调
+
         let clickEvent = new cc.Component.EventHandler();
         clickEvent.target = targetNode;
         clickEvent.component = className;

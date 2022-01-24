@@ -29,9 +29,10 @@ export enum ELoadPreset {
 /** 加载选项 */
 export interface ILoadOptions {
     uuid?: string;
-    url?: string;
-    path?: string;
-    bundle?: ELoadBundle;
-    type?: typeof cc.Asset;
-    preset?: ELoadPreset;
+    url?: string; // 链接
+    path?: string; // 路径
+    bundle?: ELoadBundle; // bundle包
+    hideOther?: boolean; // 关闭其他
+    type?: typeof cc.Asset; // 类型
+    preset?: ELoadPreset; // 加载区域（本地、远程
 }

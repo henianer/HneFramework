@@ -70,7 +70,7 @@ export default class ChatRoom extends UIBase {
 
     public async init() {
         this._np_chatRecord = new cc.NodePool('chatRecord');
-        this._pf_chatRecord = await LoadMgr.instance(LoadMgr).loadPrefab(Path.CHAT_RECORD);
+        this._pf_chatRecord = await LoadMgr.instance(LoadMgr).loadPrefab(Path.WIDGET_CHAT_RECORD);
         this._np_chatRecord.put(cc.instantiate(this._pf_chatRecord));
     }
 
