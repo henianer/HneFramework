@@ -6,6 +6,7 @@ const { ccclass, property } = cc._decorator;
 export default class Home extends UIBase {
 
     protected onShowUI(): void {
+
     }
 
     protected onHideUI(): void {
