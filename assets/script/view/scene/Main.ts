@@ -1,5 +1,6 @@
 import Path from "../../config/Path";
 import UIMgr from "../../framework/module/ui/UIMgr";
+import { LinkList } from "../../framework/structure/LinkList";
 
 
 /*******************************************
