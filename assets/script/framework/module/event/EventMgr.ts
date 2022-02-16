@@ -6,8 +6,8 @@
     事件
 *******************************************/
 
+import Singleton from "../../designPattern/Singleton";
 import Dictionary from "../../structure/Dictionary";
-import Singleton from "../../util/Singleton";
 import { EAllEvent } from "./EAllEvent";
 
 interface EventData {

@@ -8,9 +8,9 @@
     UI管理
 *******************************************/
 
+import Singleton from "../../designPattern/Singleton";
 import Dictionary from "../../structure/Dictionary";
 import Stack from "../../structure/Stack";
-import Singleton from "../../util/Singleton";
 import { ILoadOptions } from "../load/ILoad";
 import LoadMgr from "../load/LoadMgr";
 import { IUI } from "./IUI";
