@@ -8,7 +8,7 @@
     不要直接通过Socket和Http进行通讯联网
 *******************************************/
 
-import Singleton from "../../util/Singleton";
+import Singleton from "../../designPattern/Singleton";
 import { EAllEvent } from "../event/EAllEvent";
 import EventMgr from "../event/EventMgr";
 import Http from "./Http";

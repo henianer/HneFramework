@@ -1,4 +1,6 @@
 import Path from "../../config/Path";
+import { ELoadPreset } from "../../framework/module/load/ILoad";
+import LoadMgr from "../../framework/module/load/LoadMgr";
 import UIMgr from "../../framework/module/ui/UIMgr";
 import { LinkList } from "../../framework/structure/LinkList";
 
@@ -15,9 +17,9 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Main extends cc.Component {
 
-    protected onLoad(): void {
+    protected async onLoad(): Promise<void> {
         // UIMgr.instance(UIMgr).show(Path.CHAT_ROOM, this.node);
-        UIMgr.instance(UIMgr).show(Path.DIALOG_HOME, this.node);
+        // UIMgr.instance(UIMgr).show(Path.DIALOG_HOME, this.node);
     }
 
 }

@@ -11,7 +11,7 @@
 import Singleton from "../../designPattern/Singleton";
 import Dictionary from "../../structure/Dictionary";
 import Stack from "../../structure/Stack";
-import { ILoadOptions } from "../load/ILoad";
+import { IResOptions } from "../load/ILoad";
 import LoadMgr from "../load/LoadMgr";
 import { IUI } from "./IUI";
 import UIBase from "./UIBase";
@@ -30,16 +30,16 @@ export default class UIMgr extends Singleton<UIMgr> {
     }
 
     /** 初始化页面 */
-    private async init(loadOptions: ILoadOptions, parent?: cc.Node): Promise<IUI> {
-        if (Object.keys(loadOptions).length === 0) {
+    private async init(resOptions: IResOptions, parent?: cc.Node): Promise<IUI> {
+        if (Object.keys(resOptions).length === 0) {
             cc.warn('==>初始化页面参数传入错误<==');
             return null;
         }
-        let path = loadOptions.bundle + '/' + loadOptions.path;
+        let path = resOptions.bundle + '/' + resOptions.path;
         if (this._uiDic.containsKey(path)) {
             return this._uiDic.get(path);
         } else {
-            let prefab = await LoadMgr.instance(LoadMgr).loadPrefab(loadOptions);
+            let prefab = await LoadMgr.instance(LoadMgr).loadPrefab(resOptions);
             let node = cc.instantiate(prefab);
             let component = node.getComponent(`${node.name}`);
             let ui: IUI;
@@ -60,17 +60,17 @@ export default class UIMgr extends Singleton<UIMgr> {
     }
 
     /** 页面入栈(显示) */
-    public async show(loadOptions: ILoadOptions, parent?: cc.Node): Promise<IUI> {
-        if (Object.keys(loadOptions).length === 0) {
+    public async show(resOptions: IResOptions, parent?: cc.Node): Promise<IUI> {
+        if (Object.keys(resOptions).length === 0) {
             cc.warn('==>显示页面参数传入错误<==');
             return null;
         }
-        let path = loadOptions.bundle + '/' + loadOptions.path;
-        if (this._uiStack.count > 0 && loadOptions.hideOther) {
+        let path = resOptions.bundle + '/' + resOptions.path;
+        if (this._uiStack.count > 0) {
             let _path = this._uiStack.peek();
             this._uiDic.get(_path).hideUI();
         }
-        let ui: IUI = await this.init(loadOptions, parent);
+        let ui: IUI = await this.init(resOptions, parent);
         ui.showUI();
         this._uiStack.push(path);
         this._uiDic.add(path, ui);

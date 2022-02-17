@@ -7,28 +7,33 @@
     资源加载
 *******************************************/
 
-import { ILoad, ILoadOptions } from "./ILoad";
+import { ILoad, IResOptions } from "./ILoad";
 import Res from "./Res";
 
 export default class ResLoad implements ILoad {
 
-    loadPrefab(loadOptions: ILoadOptions): Res<cc.Prefab> {
-        loadOptions.type = cc.Prefab;
-        return new Res(loadOptions);
+    loadPrefab(resOptions: IResOptions): Res<cc.Prefab> {
+        resOptions.type = cc.Prefab;
+        return new Res(resOptions);
     }
 
-    loadImage(loadOptions: ILoadOptions): Res<cc.SpriteFrame> {
-        loadOptions.type = cc.SpriteFrame;
-        return new Res(loadOptions);
+    loadImage(resOptions: IResOptions): Res<cc.SpriteFrame> {
+        resOptions.type = cc.SpriteFrame;
+        return new Res(resOptions);
     }
 
-    loadAudio(loadOptions: ILoadOptions): Res<cc.AudioClip> {
-        loadOptions.type = cc.AudioClip;
-        return new Res(loadOptions);
+    loadRemoteImage(resOptions: IResOptions):Res<cc.Texture2D>{
+        resOptions.type = cc.Texture2D;
+        return new Res(resOptions);
     }
 
-    loadFont(loadOptions: ILoadOptions): Res<cc.Font> {
-        loadOptions.type = cc.Font;
-        return new Res(loadOptions);
+    loadAudio(resOptions: IResOptions): Res<cc.AudioClip> {
+        resOptions.type = cc.AudioClip;
+        return new Res(resOptions);
+    }
+
+    loadFont(resOptions: IResOptions): Res<cc.Font> {
+        resOptions.type = cc.Font;
+        return new Res(resOptions);
     }
 }

@@ -10,7 +10,6 @@
 import Path from "../../config/Path";
 import { EAllEvent } from "../../framework/module/event/EAllEvent";
 import EventMgr from "../../framework/module/event/EventMgr";
-import { ELoadBundle, ILoadOptions } from "../../framework/module/load/ILoad";
 import LoadMgr from "../../framework/module/load/LoadMgr";
 import { ENetworkPort, ENetworkProtocol, ENetworkSendType, ESocketBinaryType, INetworkConnectData, INetworkSendData, IP_OR_DOMAIN } from "../../framework/module/net/INetwork";
 import Network from "../../framework/module/net/Network";

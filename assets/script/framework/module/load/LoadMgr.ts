@@ -1,5 +1,5 @@
 import Singleton from "../../designPattern/Singleton";
-import { ILoadOptions } from "./ILoad";
+import { ELoadPreset, ILoadOptions, IResOptions } from "./ILoad";
 import ResLoad from "./ResLoad";
 
 // TODO: 何斌(1997_10_23@sina.com) 2021-12-25 20:11
@@ -13,11 +13,15 @@ export default class LoadMgr extends Singleton<LoadMgr>{
         this._loader = new ResLoad();
     }
 
-    public loadImage(loadOptions: ILoadOptions, loadOption?: ILoadOptions) {
-        return this._loader.loadImage(loadOptions).load(loadOption);
+    public async loadImage(resOptions: IResOptions, loadOption?: ILoadOptions) {
+        if(loadOption && loadOption.preset === ELoadPreset.REMOTE)
+        {
+            return new cc.SpriteFrame(await this._loader.loadRemoteImage(resOptions).load(loadOption));
+        }
+        return this._loader.loadImage(resOptions).load(loadOption);
     }
 
-    public loadPrefab(loadOptions: ILoadOptions, loadOption?: ILoadOptions) {
-        return this._loader.loadPrefab(loadOptions).load(loadOption);
+    public loadPrefab(resOptions: IResOptions, loadOption?: ILoadOptions) {
+        return this._loader.loadPrefab(resOptions).load(loadOption);
     }
 }

@@ -8,10 +8,10 @@
 *******************************************/
 
 export interface ILoad {
-    loadPrefab(loadOptions: ILoadOptions);
-    loadImage(loadOptions: ILoadOptions);
-    loadAudio(loadOptions: ILoadOptions);
-    loadFont(loadOptions: ILoadOptions);
+    loadPrefab(resOptions: IResOptions);
+    loadImage(resOptions: IResOptions);
+    loadAudio(resOptions: IResOptions);
+    loadFont(resOptions: IResOptions);
 }
 
 /** 目标资源的Bundle */
@@ -26,13 +26,16 @@ export enum ELoadPreset {
 }
 
 
-/** 加载选项 */
-export interface ILoadOptions {
+/** 资源选项 */
+export interface IResOptions {
     uuid?: string;
     url?: string; // 链接
     path?: string; // 路径
     bundle?: ELoadBundle; // bundle包
-    hideOther?: boolean; // 关闭其他
     type?: typeof cc.Asset; // 类型
+}
+
+/** 加载选项 */
+export interface ILoadOptions {
     preset?: ELoadPreset; // 加载区域（本地、远程
 }

@@ -7,30 +7,30 @@
     资源
 *******************************************/
 
-import { ELoadPreset, ILoadOptions } from "./ILoad";
+import { ELoadPreset, ILoadOptions, IResOptions } from "./ILoad";
 
 export default class Res<T extends cc.Asset> {
 
     /** 资源：加载-该类型资源或该类型资源的数组 预加载-该类型的非解析资源 */
     private _asset: T | T[] | cc.AssetManager.RequestItem[];
-    private readonly _loadOptions: ILoadOptions | ILoadOptions[];
+    private readonly _resOptions: IResOptions | IResOptions[];
     private readonly _loadOption: ILoadOptions;
 
-    public constructor(loadOptions: ILoadOptions | ILoadOptions[], loadOption: ILoadOptions = Object.create(null)) {
-        if (loadOptions instanceof Array) {
-            for (let i = 0; i < loadOptions.length; i++) {
-                if (Object.keys(loadOptions[i]).length === 0) {
+    public constructor(resOptions: IResOptions | IResOptions[], loadOption: ILoadOptions = Object.create(null)) {
+        if (resOptions instanceof Array) {
+            for (let i = 0; i < resOptions.length; i++) {
+                if (Object.keys(resOptions[i]).length === 0) {
                     cc.warn('==>加载参数传入错误<==');
                     return;
                 }
             }
         } else {
-            if (Object.keys(loadOptions).length === 0) {
+            if (Object.keys(resOptions).length === 0) {
                 cc.warn('==>加载参数传入错误<==');
                 return;
             }
         }
-        this._loadOptions = loadOptions;
+        this._resOptions = resOptions;
         this._loadOption = loadOption;
     }
 
@@ -58,20 +58,20 @@ export default class Res<T extends cc.Asset> {
             };
 
             if (loadOption.preset === ELoadPreset.REMOTE) {
-                if (this._loadOptions instanceof Array) {
+                if (this._resOptions instanceof Array) {
                     cc.warn('==>同时只能加载一个远程资源<==');
                     resolve(null);
                 } else {
-                    let url: string = this._loadOptions.url;
+                    let url: string = this._resOptions.url;
                     if (url === '' || url == null) {
                         cc.warn('==>远程资源路径不合法<==');
                     } else {
-                        cc.assetManager.loadRemote(url, loadOption, onComplete);
+                        cc.assetManager.loadRemote<T>(url, loadOption, onComplete);
                     }
                 }
             }
             else {
-                cc.assetManager.loadAny(this._loadOptions, loadOption, onProgress, onComplete)
+                cc.assetManager.loadAny(this._resOptions, loadOption, onProgress, onComplete)
             }
         })
     }
@@ -103,7 +103,7 @@ export default class Res<T extends cc.Asset> {
                 resolve(this._asset);
             };
 
-            cc.assetManager.preloadAny(this._loadOptions, loadOption, onProgress, onComplete);
+            cc.assetManager.preloadAny(this._resOptions, loadOption, onProgress, onComplete);
         })
     }
 
