@@ -18,8 +18,7 @@ const { ccclass, property } = cc._decorator;
 export default class Main extends cc.Component {
 
     protected async onLoad(): Promise<void> {
-        // UIMgr.instance(UIMgr).show(Path.CHAT_ROOM, this.node);
-        // UIMgr.instance(UIMgr).show(Path.DIALOG_HOME, this.node);
+        UIMgr.instance(UIMgr).show(Path.DIALOG_HOME, this.node);
     }
 
 }
