@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "minio": "^7.0.26"
+  },
+  "devDependencies": {
+    "@types/minio": "^7.0.12"
+  }
+}
