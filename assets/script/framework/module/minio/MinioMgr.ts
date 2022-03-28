@@ -128,30 +128,48 @@ export default class MinioMgr extends Singleton<MinioMgr> {
     /**
      * 获取对象
      * @param getOptions 参数
-     * @returns 二进制流
+     * @returns
      */
-    public async getObject(getOptions: TGetOptions) {
-        // let isExist = this.isBucketExist(getOptions.bucketName);
-        // if (!isExist) return console.log(`不存在桶:${getOptions.bucketName}`);
-        // let size = 0;
-        // this.minioClient.getObject(getOptions.bucketName, `${getOptions.objectName}.${getOptions.suffix}`, (err, dataStream) => {
-        //     if (err) {
-        //         return console.log(err)
-        //     }
-        //     dataStream.on('data', (chunk) => {
-        //         size += chunk.length
-        //         console.log(chunk);
-        //     })
-        //     dataStream.on('end', () => {
-        //         console.log('total size = ' + size)
-        //     })
-        //     dataStream.on('error', (err) => {
-        //         console.log(err)
-        //     })
-        // })
+    public async getObject(getOptions: TGetOptions): Promise<any> {
         let isExist = await this.isBucketExist(getOptions.bucketName);
         if (!isExist) return null;
-        return this.minioClient.getObject(getOptions.bucketName, `${getOptions.objectName}.${getOptions.suffix}`);
+        return new Promise<Uint8Array>((resolve, reject) => {
+            let size = 0;
+            let uint8s: Uint8Array = null;
+            let chunks: Uint8Array[] = [];
+            this.minioClient.getObject(getOptions.bucketName, `${getOptions.objectName}.${getOptions.suffix}`, (err, stream) => {
+                stream.on('data', (chunk) => {
+                    size += chunk.length;
+                    chunks.push(chunk);
+                })
+                stream.on('end', () => {
+                    // console.log('total size = ' + size);
+                    uint8s = new Uint8Array(size);
+                    for (let i = 0; i < chunks.length; i++) {
+                        uint8s.set(chunks[i]);
+                    }
+                    return resolve(this.objectParse(uint8s, getOptions.suffix));
+                })
+                stream.on('error', (err) => {
+                    // console.log(err);
+                    return reject(err);
+                })
+            });
+        })
+    }
+
+    /** 对象解析 */
+    public objectParse(stream: Uint8Array, suffix: EGetSuffix) {
+        let res = null;
+        switch (suffix) {
+            case EGetSuffix.JSON:
+                res = Util.uint8ArrayToJSON(stream);
+                break;
+            case EGetSuffix.JPG:
+                res = Util.uint8ArrayToIamge(stream);
+                break;
+        }
+        return res;
     }
 
     /**

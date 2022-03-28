@@ -17,6 +17,12 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Main extends cc.Component {
 
+    @property(cc.Sprite)
+    public sprite0: cc.Sprite = null;
+
+    @property(cc.Sprite)
+    public sprite1: cc.Sprite = null;
+
     protected onLoad(): void {
         // UIMgr.instance(UIMgr).show(Path.DIALOG_HOME, this.node);
         this.getMinioObject();
@@ -24,18 +30,10 @@ export default class Main extends cc.Component {
 
     public async getMinioObject() {
         let getOptions: TGetOptions = { bucketName: "test", objectName: "test0", suffix: EGetSuffix.JPG };
-        // let size = 0;
-        let stream = await MinioMgr.instance(MinioMgr).getObject(getOptions);
-        console.log(stream);
-        // stream.on('data', function (chunk) {
-        //     size += chunk.length;
-        //     console.log(chunk);
-        // })
-        // stream.on('end', function () {
-        //     console.log('total size = ' + size);
-        // })
-        // stream.on('error', function (err) {
-        //     console.log(err);
-        // })
+        let res = await MinioMgr.instance(MinioMgr).getObject(getOptions);
+        this.sprite0.spriteFrame = res;
+        getOptions = { bucketName: "test", objectName: "test1", suffix: EGetSuffix.JPG };
+        res = await MinioMgr.instance(MinioMgr).getObject(getOptions);
+        this.sprite1.spriteFrame = res;
     }
 }
