@@ -29,11 +29,13 @@ export default class Main extends cc.Component {
     }
 
     public async getMinioObject() {
-        let getOptions: TGetOptions = { bucketName: "test", objectName: "test0", suffix: EGetSuffix.JPG };
+        let getOptions: TGetOptions = { bucketName: "test", objectName: "binbin0", suffix: EGetSuffix.JPG };
         let res = await MinioMgr.instance(MinioMgr).getObject(getOptions);
         this.sprite0.spriteFrame = res;
-        getOptions = { bucketName: "test", objectName: "test1", suffix: EGetSuffix.JPG };
+        getOptions = { bucketName: "test", objectName: "binbin1", suffix: EGetSuffix.JPG };
         res = await MinioMgr.instance(MinioMgr).getObject(getOptions);
         this.sprite1.spriteFrame = res;
+        // let url = await MinioMgr.instance(MinioMgr).getObjectURL(getOptions);
+        // console.log(url);
     }
 }
