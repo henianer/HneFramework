@@ -165,9 +165,11 @@ export default class MinioMgr extends Singleton<MinioMgr> {
             case EGetSuffix.JSON:
                 res = Util.uint8ArrayToJSON(stream);
                 break;
-            case EGetSuffix.JPG:
+            case EGetSuffix.JPG || EGetSuffix.PNG:
                 res = Util.uint8ArrayToIamge(stream);
                 break;
+            case EGetSuffix.TXT:
+                res = Util.uint8ArrayToString(stream);
         }
         return res;
     }

@@ -72,4 +72,28 @@ export default class Util {
         // console.log(spriteFrame);
         return spriteFrame;
     }
+
+    /** uint8array转字符（并转码中文，防止乱码） */
+    public static uint8ArrayToString(stream: Uint8Array) {
+        let str = '', i = 0, len = stream.length;
+        let char0, char1, char2;
+        while (i < len) {
+            char0 = stream[i++];
+            switch (char0 >> 4) {
+                case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                    str += String.fromCharCode(char0);
+                    break;
+                case 12: case 13:
+                    char1 = stream[i++];
+                    str += String.fromCharCode(((char0 & 0x1F) << 6 | (char1 & 0x3F)));
+                    break;
+                case 14:
+                    char1 = stream[i++];
+                    char2 = stream[i++];
+                    str += String.fromCharCode(((char0 & 0x0F) << 12 | (char1 & 0x3F) << 6 | (char2 & 0x3F) << 0));
+                    break;
+            }
+        }
+        return str;
+    }
 }
