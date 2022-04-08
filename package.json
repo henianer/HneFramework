@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "minio": "^7.0.26"
+    "minio": "^7.0.26",
+    "tsrpc-browser": "^3.2.3"
   },
   "devDependencies": {
     "@types/minio": "^7.0.12"

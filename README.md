@@ -12,3 +12,8 @@ CocosCreator Framework
   * `accessKey: '*****',`
   * `secretKey: '*****',`
   * `});`
+## tsprc框架使用
+* 浏览器、React Native: `tsrpc-browser`
+* 小程序: `tsrpc-miniapp`
+* NodeJS: `tsrpc`
+* 根目录安装: `npm install tsrpc-`
