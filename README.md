@@ -17,3 +17,6 @@ CocosCreator Framework
 * 小程序: `tsrpc-miniapp`
 * NodeJS: `tsrpc`
 * 根目录安装: `npm install tsrpc-`
+## MongoDB数据库使用
+* `npm i mongodb`
+* typescript类型定义:`npm i @types/mongodb -D`
