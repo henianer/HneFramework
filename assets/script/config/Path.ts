@@ -14,6 +14,7 @@ type PathData = {
 
     DIALOG_CHAT_ROOM: IResOptions,
     DIALOG_HOME: IResOptions,
+    DIALOG_LOG_IN: IResOptions,
 
     WIDGET_CHAT_RECORD: IResOptions,
 }
@@ -24,6 +25,7 @@ let Path: PathData = {
 
     DIALOG_CHAT_ROOM: { path: 'prefab/dialog/ChatRoom', bundle: ELoadBundle.RESOURCES },
     DIALOG_HOME: { path: 'prefab/dialog/Home', bundle: ELoadBundle.RESOURCES },
+    DIALOG_LOG_IN: { path: 'prefab/dialog/Login', bundle: ELoadBundle.RESOURCES },
 
     WIDGET_CHAT_RECORD: { path: 'prefab/widget/ChatRecord', bundle: ELoadBundle.RESOURCES },
 

@@ -12,7 +12,6 @@ import { EAllEvent } from "../../framework/module/event/EAllEvent";
 import EventMgr from "../../framework/module/event/EventMgr";
 import LoadMgr from "../../framework/module/load/LoadMgr";
 import { ENetworkPort, ENetworkProtocol, ENetworkSendType, ESocketBinaryType, INetworkConnectData, INetworkSendData, IP_OR_DOMAIN } from "../../framework/module/net/INetwork";
-import Network from "../../framework/module/net/Network";
 import UIBase from "../../framework/module/ui/UIBase";
 import ChatRecord from "../widget/ChatRecord";
 
@@ -46,111 +45,112 @@ export default class ChatRoom extends UIBase {
     private _ar_str_chatRecord: string[] = [];
     private _ar_nd_chatRecord: cc.Node[] = [];
 
-    private on() {
-        EventMgr.instance(EventMgr).on(EAllEvent.NET_CONNECTED, this.onConnected, this);
-        EventMgr.instance(EventMgr).on(EAllEvent.NET_CONNECT_FAILED, this.onConnectFailed, this);
-        EventMgr.instance(EventMgr).on(EAllEvent.NET_DISCONNECTED, this.onDisconnected, this);
-        EventMgr.instance(EventMgr).on(EAllEvent.NET_MESSAGE, this.onMessage, this);
-    }
+    /** 暂时注释 */
+    // private on() {
+    //     EventMgr.instance(EventMgr).on(EAllEvent.NET_CONNECTED, this.onConnected, this);
+    //     EventMgr.instance(EventMgr).on(EAllEvent.NET_CONNECT_FAILED, this.onConnectFailed, this);
+    //     EventMgr.instance(EventMgr).on(EAllEvent.NET_DISCONNECTED, this.onDisconnected, this);
+    //     EventMgr.instance(EventMgr).on(EAllEvent.NET_MESSAGE, this.onMessage, this);
+    // }
 
-    private off() {
-        EventMgr.instance(EventMgr).off(EAllEvent.NET_CONNECTED, this.onConnected, this);
-        EventMgr.instance(EventMgr).off(EAllEvent.NET_CONNECT_FAILED, this.onConnectFailed, this);
-        EventMgr.instance(EventMgr).off(EAllEvent.NET_DISCONNECTED, this.onDisconnected, this);
-        EventMgr.instance(EventMgr).off(EAllEvent.NET_MESSAGE, this.onMessage, this);
-    }
+    // private off() {
+    //     EventMgr.instance(EventMgr).off(EAllEvent.NET_CONNECTED, this.onConnected, this);
+    //     EventMgr.instance(EventMgr).off(EAllEvent.NET_CONNECT_FAILED, this.onConnectFailed, this);
+    //     EventMgr.instance(EventMgr).off(EAllEvent.NET_DISCONNECTED, this.onDisconnected, this);
+    //     EventMgr.instance(EventMgr).off(EAllEvent.NET_MESSAGE, this.onMessage, this);
+    // }
 
-    protected onShowUI() {
-        cc.debug.setDisplayStats(false);
-        this.init();
-        this.on();
-        this.updateUI(false);
-    }
+    // protected onShowUI() {
+    //     cc.debug.setDisplayStats(false);
+    //     this.init();
+    //     this.on();
+    //     this.updateUI(false);
+    // }
 
-    public async init() {
-        this._np_chatRecord = new cc.NodePool('chatRecord');
-        this._pf_chatRecord = await LoadMgr.instance(LoadMgr).loadPrefab(Path.WIDGET_CHAT_RECORD);
-        this._np_chatRecord.put(cc.instantiate(this._pf_chatRecord));
-    }
+    // public async init() {
+    //     this._np_chatRecord = new cc.NodePool('chatRecord');
+    //     this._pf_chatRecord = await LoadMgr.instance(LoadMgr).loadPrefab(Path.WIDGET_CHAT_RECORD);
+    //     this._np_chatRecord.put(cc.instantiate(this._pf_chatRecord));
+    // }
 
-    protected onHideUI() {
-        this.off();
-    }
+    // protected onHideUI() {
+    //     this.off();
+    // }
 
-    /** 更新UI */
-    private updateUI(isConnected: boolean) {
-        this.bt_webSocketConnect.interactable = !isConnected;
-        this.bt_webSocketClose.interactable = isConnected;
-        this.bt_webSocketSend.interactable = isConnected;
-        this.eb_input.placeholder = isConnected ? '' : '请先连接网络...';
-        this.eb_input.string = '';
-        this.eb_input.enabled = isConnected;
-    }
+    // /** 更新UI */
+    // private updateUI(isConnected: boolean) {
+    //     this.bt_webSocketConnect.interactable = !isConnected;
+    //     this.bt_webSocketClose.interactable = isConnected;
+    //     this.bt_webSocketSend.interactable = isConnected;
+    //     this.eb_input.placeholder = isConnected ? '' : '请先连接网络...';
+    //     this.eb_input.string = '';
+    //     this.eb_input.enabled = isConnected;
+    // }
 
-    /** 更新聊天记录视图 */
-    private updateChatRecordView(data: string) {
-        let chatRecordNode: cc.Node = null;
-        if (this._np_chatRecord.size() > 0) {
-            chatRecordNode = this._np_chatRecord.get();
-        }
-        else {
-            chatRecordNode = cc.instantiate(this._pf_chatRecord);
-        }
-        chatRecordNode.getComponent(ChatRecord).string = data;
-        chatRecordNode.parent = this.nd_chatRecordContent;
-        this._ar_str_chatRecord.push(data);
-        this._ar_nd_chatRecord.push(chatRecordNode);
-        if (this._ar_nd_chatRecord.length > 30) {
-            let firstChatRecordNode: cc.Node = this._ar_nd_chatRecord.shift();
-            this._np_chatRecord.put(firstChatRecordNode);
-        }
-    }
+    // /** 更新聊天记录视图 */
+    // private updateChatRecordView(data: string) {
+    //     let chatRecordNode: cc.Node = null;
+    //     if (this._np_chatRecord.size() > 0) {
+    //         chatRecordNode = this._np_chatRecord.get();
+    //     }
+    //     else {
+    //         chatRecordNode = cc.instantiate(this._pf_chatRecord);
+    //     }
+    //     chatRecordNode.getComponent(ChatRecord).string = data;
+    //     chatRecordNode.parent = this.nd_chatRecordContent;
+    //     this._ar_str_chatRecord.push(data);
+    //     this._ar_nd_chatRecord.push(chatRecordNode);
+    //     if (this._ar_nd_chatRecord.length > 30) {
+    //         let firstChatRecordNode: cc.Node = this._ar_nd_chatRecord.shift();
+    //         this._np_chatRecord.put(firstChatRecordNode);
+    //     }
+    // }
 
-    private onclickWebSocketConnect(event?: cc.Event, param?: string) {
-        let networkConnectData: INetworkConnectData = {
-            ip: IP_OR_DOMAIN,
-            port: ENetworkPort.MESSAGE_SERVER,
-            protocol: ENetworkProtocol.WS,
-            binaryType: ESocketBinaryType.ARRAY_BUFFER
-        };
-        Network.instance(Network).init(networkConnectData);
-        Network.instance(Network).connect();
-    }
+    // private onclickWebSocketConnect(event?: cc.Event, param?: string) {
+    //     let networkConnectData: INetworkConnectData = {
+    //         ip: IP_OR_DOMAIN,
+    //         port: ENetworkPort.MESSAGE_SERVER,
+    //         protocol: ENetworkProtocol.WS,
+    //         binaryType: ESocketBinaryType.ARRAY_BUFFER
+    //     };
+    //     Network.instance(Network).init(networkConnectData);
+    //     Network.instance(Network).connect();
+    // }
 
-    private onclickWebSocketSend(event?: cc.Event, param?: string) {
-        let sendData: INetworkSendData = {
-            type: ENetworkSendType.MESSAGE_CHAT,
-            data: this.eb_input.string
-        }
-        Network.instance(Network).send(sendData);
-    }
+    // private onclickWebSocketSend(event?: cc.Event, param?: string) {
+    //     let sendData: INetworkSendData = {
+    //         type: ENetworkSendType.MESSAGE_CHAT,
+    //         data: this.eb_input.string
+    //     }
+    //     Network.instance(Network).send(sendData);
+    // }
 
-    private onclickWebSocketClose(event?: cc.Event, param?: string) {
-        Network.instance(Network).close();
-    }
+    // private onclickWebSocketClose(event?: cc.Event, param?: string) {
+    //     Network.instance(Network).close();
+    // }
 
-    /**********************监听************************/
-    /** 已连接 */
-    private onConnected(msg: any) {
-        this.updateUI(true);
-    }
+    // /**********************监听************************/
+    // /** 已连接 */
+    // private onConnected(msg: any) {
+    //     this.updateUI(true);
+    // }
 
-    /** 连接失败 */
-    private onConnectFailed(msg: any) {
-        this.updateUI(false);
-    }
+    // /** 连接失败 */
+    // private onConnectFailed(msg: any) {
+    //     this.updateUI(false);
+    // }
 
-    /** 连接断开 */
-    private onDisconnected(msg: any) {
-        this.updateUI(false);
-    }
+    // /** 连接断开 */
+    // private onDisconnected(msg: any) {
+    //     this.updateUI(false);
+    // }
 
-    /** 消息 */
-    private onMessage(msg: INetworkSendData) {
-        // cc.log(msg.data);
-        if (msg.type === ENetworkSendType.MESSAGE_CHAT) {
-            this.updateChatRecordView(msg.data);
-        }
-    }
+    // /** 消息 */
+    // private onMessage(msg: INetworkSendData) {
+    //     // cc.log(msg.data);
+    //     if (msg.type === ENetworkSendType.MESSAGE_CHAT) {
+    //         this.updateChatRecordView(msg.data);
+    //     }
+    // }
 
 }

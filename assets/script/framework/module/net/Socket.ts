@@ -7,108 +7,161 @@
     Socket
 *******************************************/
 
+import { WsClient } from "tsrpc-browser";
+import { serviceProto, ServiceType } from "../../../tsrpc/shared/protocols/serviceProto";
 import { ESocketBinaryType, ESocketReadyState, INetworkDelegate } from "./INetwork";
 
 export default class Socket {
-    private _webSocket: WebSocket = null;
-    private _socketReadyState: ESocketReadyState = null;
-    private _binaryType: ESocketBinaryType = null;
-    private _delegate: INetworkDelegate = null;
 
-    private _url: string = null;
+    /** 使用TSRPC框架 */
+    private client: WsClient<ServiceType> = null;
 
-    public init(url: string, binaryType: ESocketBinaryType, delegate: INetworkDelegate) {
-        this._url = url;
-        this._binaryType = binaryType;
-        this._delegate = delegate;
-        // cc.log(`[WebSocket][${this._url}][Init]`);
+    constructor(server: string) {
+        this.client = new WsClient(serviceProto, {
+            server,
+            json: true,
+            logger: console
+        });
     }
 
-    public connect() {
-        if (this._webSocket && this._webSocket.readyState === ESocketReadyState.CONNECTING) {
-            cc.log(`[WebSocket][${this._url}][Already Connecting]`);
-            return;
+    public async connect(): Promise<boolean> {
+        let connect = await this.client.connect();
+        if (!connect.isSucc) {
+            console.log(connect.errMsg);
+            return false;
         }
-        // this.close();
-        cc.log(`[WebSocket][${this._url}][Connecting]`);
-        this._webSocket = new WebSocket(this._url);
-        this._webSocket.binaryType = this._binaryType;
-        this._socketReadyState = ESocketReadyState.CONNECTING;
-        this._webSocket.onopen = this.onOpen.bind(this);
-        this._webSocket.onmessage = this.onMessage.bind(this);
-        this._webSocket.onerror = this.onError.bind(this);
-        this._webSocket.onclose = this.onClose.bind(this);
+        this.reConnect();
+        return true;
+        // let retDBGet = await this.client.callApi('ptl/db/DBGet', {
+        //     get: {
+        //         account: 'hebin'
+        //     }
+        // })
+
+        // console.log(retDBGet.isSucc || retDBGet.err);
     }
 
-    public close() {
-        if (this._webSocket) {
-            cc.log(`[WebSocket][${this._url}][Closing]`);
-            this._socketReadyState = ESocketReadyState.CLOSING;
-            this._webSocket.close();
-        } else {
-            this._socketReadyState = ESocketReadyState.CLOSED;
-        }
+    public reConnect() {
+        this.client.flows.postDisconnectFlow.push(v => {
+            if (!v.isManual) {
+                // 2秒后重连
+                let re = async (call: Function) => {
+                    let connect = await this.client.connect();
+                    if (!connect.isSucc) {
+                        console.log(connect.errMsg);
+                        setTimeout(() => {
+                            call();
+                        }, 2000);
+                    }
+                }
+                re(re);
+            }
+            return v;
+        })
     }
 
-    public send(data: any) {
-        if (this._socketReadyState !== ESocketReadyState.CONNECTED ||
-            this._webSocket.readyState !== ESocketReadyState.CONNECTED ||
-            !this._webSocket) {
-            return;
-        }
-        this._webSocket.send(JSON.stringify(data));
-    }
 
-    private onOpen(event: Event) {
-        // cc.log(`[WebSocket][${this._url}][Connected]`);
-        this._socketReadyState = ESocketReadyState.CONNECTED;
-        this._delegate && this._delegate.onConnected && this._delegate.onConnected(event);
-    }
 
-    private onMessage(event: MessageEvent) {
-        // cc.log(`[WebSocket][${this._url}][Message]`);
-        // cc.log(event);
-        let data = event.data;
-        if (typeof (data) !== 'undefined' && data instanceof Blob) { // Blob转ArrayBuffer
-            let reader = new FileReader();
-            reader.onload = () => {
-                data = reader.result;
-                this._delegate && this._delegate.onMessage && this._delegate.onMessage(data);
-            };
-            reader.readAsArrayBuffer(data);
-        } else {
-            this._delegate && this._delegate.onMessage && this._delegate.onMessage(JSON.parse(data));
-        }
-    }
+    /** 暂时注释 */
+    // private _webSocket: WebSocket = null;
+    // private _socketReadyState: ESocketReadyState = null;
+    // private _binaryType: ESocketBinaryType = null;
+    // private _delegate: INetworkDelegate = null;
 
-    private onError(event: ErrorEvent) {
-        // cc.log(`[WebSocket][${this._url}][Error]`);
-        // cc.log(event);
-        // if (this._socketReadyState == ESocketReadyState.CONNECTING) {
-        //     this._socketReadyState = ESocketReadyState.CLOSED;
-        // }
-        this._socketReadyState = ESocketReadyState.CLOSED;
-        if (this._webSocket) this._webSocket = null;
-        this._delegate && this._delegate.onConnectFailed && this._delegate.onConnectFailed(event);
-    }
+    // private _url: string = null;
 
-    private onClose(event: CloseEvent) {
-        // cc.log(`[WebSocket][${this._url}][Closed]`);
-        // cc.log(event);
-        this._socketReadyState = ESocketReadyState.CLOSED;
-        if (this._webSocket) this._webSocket = null;
-        this._delegate && this._delegate.onDisconnected && this._delegate.onDisconnected(event);
-    }
+    // public init(url: string, binaryType: ESocketBinaryType, delegate: INetworkDelegate) {
+    //     this._url = url;
+    //     this._binaryType = binaryType;
+    //     this._delegate = delegate;
+    //     // cc.log(`[WebSocket][${this._url}][Init]`);
+    // }
 
-    public get isConnected(): boolean {
-        return this._socketReadyState == ESocketReadyState.CONNECTED;
-    }
+    // public connect() {
+    //     if (this._webSocket && this._webSocket.readyState === ESocketReadyState.CONNECTING) {
+    //         cc.log(`[WebSocket][${this._url}][Already Connecting]`);
+    //         return;
+    //     }
+    //     // this.close();
+    //     cc.log(`[WebSocket][${this._url}][Connecting]`);
+    //     this._webSocket = new WebSocket(this._url);
+    //     this._webSocket.binaryType = this._binaryType;
+    //     this._socketReadyState = ESocketReadyState.CONNECTING;
+    //     this._webSocket.onopen = this.onOpen.bind(this);
+    //     this._webSocket.onmessage = this.onMessage.bind(this);
+    //     this._webSocket.onerror = this.onError.bind(this);
+    //     this._webSocket.onclose = this.onClose.bind(this);
+    // }
 
-    public get isConnecting(): boolean {
-        return this._socketReadyState == ESocketReadyState.CONNECTING;
-    }
+    // public close() {
+    //     if (this._webSocket) {
+    //         cc.log(`[WebSocket][${this._url}][Closing]`);
+    //         this._socketReadyState = ESocketReadyState.CLOSING;
+    //         this._webSocket.close();
+    //     } else {
+    //         this._socketReadyState = ESocketReadyState.CLOSED;
+    //     }
+    // }
 
-    public get getReadyState(): ESocketReadyState {
-        return this._socketReadyState;
-    }
+    // public send(data: any) {
+    //     if (this._socketReadyState !== ESocketReadyState.CONNECTED ||
+    //         this._webSocket.readyState !== ESocketReadyState.CONNECTED ||
+    //         !this._webSocket) {
+    //         return;
+    //     }
+    //     this._webSocket.send(JSON.stringify(data));
+    // }
+
+    // private onOpen(event: Event) {
+    //     // cc.log(`[WebSocket][${this._url}][Connected]`);
+    //     this._socketReadyState = ESocketReadyState.CONNECTED;
+    //     this._delegate && this._delegate.onConnected && this._delegate.onConnected(event);
+    // }
+
+    // private onMessage(event: MessageEvent) {
+    //     // cc.log(`[WebSocket][${this._url}][Message]`);
+    //     // cc.log(event);
+    //     let data = event.data;
+    //     if (typeof (data) !== 'undefined' && data instanceof Blob) { // Blob转ArrayBuffer
+    //         let reader = new FileReader();
+    //         reader.onload = () => {
+    //             data = reader.result;
+    //             this._delegate && this._delegate.onMessage && this._delegate.onMessage(data);
+    //         };
+    //         reader.readAsArrayBuffer(data);
+    //     } else {
+    //         this._delegate && this._delegate.onMessage && this._delegate.onMessage(JSON.parse(data));
+    //     }
+    // }
+
+    // private onError(event: ErrorEvent) {
+    //     // cc.log(`[WebSocket][${this._url}][Error]`);
+    //     // cc.log(event);
+    //     // if (this._socketReadyState == ESocketReadyState.CONNECTING) {
+    //     //     this._socketReadyState = ESocketReadyState.CLOSED;
+    //     // }
+    //     this._socketReadyState = ESocketReadyState.CLOSED;
+    //     if (this._webSocket) this._webSocket = null;
+    //     this._delegate && this._delegate.onConnectFailed && this._delegate.onConnectFailed(event);
+    // }
+
+    // private onClose(event: CloseEvent) {
+    //     // cc.log(`[WebSocket][${this._url}][Closed]`);
+    //     // cc.log(event);
+    //     this._socketReadyState = ESocketReadyState.CLOSED;
+    //     if (this._webSocket) this._webSocket = null;
+    //     this._delegate && this._delegate.onDisconnected && this._delegate.onDisconnected(event);
+    // }
+
+    // public get isConnected(): boolean {
+    //     return this._socketReadyState == ESocketReadyState.CONNECTED;
+    // }
+
+    // public get isConnecting(): boolean {
+    //     return this._socketReadyState == ESocketReadyState.CONNECTING;
+    // }
+
+    // public get getReadyState(): ESocketReadyState {
+    //     return this._socketReadyState;
+    // }
 }
