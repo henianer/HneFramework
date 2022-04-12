@@ -14,10 +14,14 @@ import { ESocketBinaryType, ESocketReadyState, INetworkDelegate } from "./INetwo
 export default class Socket {
 
     /** 使用TSRPC框架 */
-    private client: WsClient<ServiceType> = null;
+    /** 服务器 */
+    private _client: WsClient<ServiceType> = null;
+    /** 重连次数 */
+    private readonly _reconnectMaxCount = 5;
+    private _reconnectCurCount = 0;
 
     constructor(server: string) {
-        this.client = new WsClient(serviceProto, {
+        this._client = new WsClient(serviceProto, {
             server,
             json: true,
             logger: console
@@ -25,12 +29,25 @@ export default class Socket {
     }
 
     public async connect(): Promise<boolean> {
-        let connect = await this.client.connect();
+        let connect = await this._client.connect();
         if (!connect.isSucc) {
-            console.log(connect.errMsg);
+            if (this._reconnectCurCount === this._reconnectMaxCount) {
+                this._reconnectCurCount = 0;
+                console.log('无法连接上网络，请查看网络状况.');
+                return false;
+            }
+            setTimeout(() => {
+                if (this._reconnectCurCount === 0) {
+                    console.log('连接网络失败，再次尝试连接中.');
+                }
+                this._reconnectCurCount++;
+                console.log(`第${this._reconnectCurCount}次尝试连接.`);
+                this.connect();
+            }, 2000);
             return false;
         }
-        this.reConnect();
+        this._reconnectCurCount = 0;
+        this.reconnect();
         return true;
         // let retDBGet = await this.client.callApi('ptl/db/DBGet', {
         //     get: {
@@ -41,25 +58,37 @@ export default class Socket {
         // console.log(retDBGet.isSucc || retDBGet.err);
     }
 
-    public reConnect() {
-        this.client.flows.postDisconnectFlow.push(v => {
+    /** 监听断线，断线后重连网络 */
+    public reconnect() {
+        this._client.flows.postDisconnectFlow.push(v => {
+            console.log('网络掉线，尝试重连中.');
+            this._reconnectCurCount = 0;
             if (!v.isManual) {
-                // 2秒后重连
-                let re = async (call: Function) => {
-                    let connect = await this.client.connect();
-                    if (!connect.isSucc) {
-                        console.log(connect.errMsg);
-                        setTimeout(() => {
-                            call();
-                        }, 2000);
-                    }
-                }
-                re(re);
+                this._reconnect();
             }
             return v;
         })
     }
 
+    private async _reconnect() {
+        // 2秒后重连
+        if (this._reconnectCurCount >= this._reconnectMaxCount) {
+            this._reconnectCurCount = 0;
+            console.log('无法连接上网络，请查看网络状况.');
+            return;
+        }
+        this._reconnectCurCount++;
+        console.log(`第${this._reconnectCurCount}次重连.`);
+        let connect = await this._client.connect();
+        if (!connect.isSucc) {
+            setTimeout(() => {
+                this._reconnect();
+            }, 2000);
+        } else {
+            this._reconnectCurCount = 0;
+            console.log('重连成功.');
+        }
+    }
 
 
     /** 暂时注释 */

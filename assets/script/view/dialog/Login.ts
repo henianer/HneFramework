@@ -9,7 +9,7 @@ export default class Login extends UIBase {
     protected async onInitUI(): Promise<void> {
         let netMgr = NetMgr.instance(NetMgr).init();
         let ret: boolean = await netMgr.connect();
-        console.log(ret);
+        // console.log(ret);
     }
 
 }
