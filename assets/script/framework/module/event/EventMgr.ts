@@ -48,7 +48,7 @@ export default class EventMgr extends Singleton<EventMgr>{
         }
     }
 
-    public emit(eventName: EAllEvent, param: any) {
+    public emit(eventName: EAllEvent, param?: any) {
         if (this._events.containsKey(eventName)) {
             let callbacks = this._events.get(eventName).callbacks;
             for (let i = 0; i < callbacks.length; i++) {

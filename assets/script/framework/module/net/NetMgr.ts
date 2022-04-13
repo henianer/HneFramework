@@ -8,6 +8,8 @@
     不要直接通过Socket和Http进行通讯联网
 *******************************************/
 
+import { HttpClient, WsClient } from "tsrpc-browser";
+import { ServiceType } from "../../../tsrpc/shared/protocols/serviceProto";
 import Singleton from "../../designPattern/Singleton";
 import { EAllEvent } from "../event/EAllEvent";
 import EventMgr from "../event/EventMgr";
@@ -18,8 +20,25 @@ import Socket from "./Socket";
 // export default class Network extends Singleton<Network> implements INetworkDelegate {
 export default class NetMgr extends Singleton<NetMgr> {
     /** 使用TSRPC框架 */
+
+    public client: WsClient<ServiceType> | HttpClient<ServiceType> = null;
+    public net: Socket | Http = null;
+
+    /** 初始化 */
     public init() {
-        return new Socket('ws://henianer.cn:8888');
+        this.net = new Socket('ws://henianer.cn:8888');
+        this.client = this.net.client;
+        return this;
+    }
+
+    /** 连接 */
+    public connect() {
+        if (this.net instanceof (Socket)) {
+            this.net.connect();
+        }
+        else if (this.net instanceof (Http)) {
+
+        }
     }
 
     /** 暂时注释 */

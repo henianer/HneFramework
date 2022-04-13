@@ -10,9 +10,11 @@
 export enum EAllEvent {
 
     // 网络
+    NET_CONNECTING = 'netConnecting',
     NET_CONNECTED = 'netConnected',
     NET_CONNECT_FAILED = 'netConnectFailed',
     NET_DISCONNECTED = 'netDisconnected',
     NET_MESSAGE = 'netMessage',
-    NET_RECONNECTED = 'netReconnected'
+    NET_RECONNECTED = 'netReconnected',
+    NET_LOSS = 'netLoss'
 }

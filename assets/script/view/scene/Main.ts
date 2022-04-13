@@ -1,5 +1,6 @@
 import { HttpClient, WsClient } from "tsrpc-browser";
 import Path from "../../config/Path";
+import { EAllEvent } from "../../framework/module/event/EAllEvent";
 import { ELoadPreset } from "../../framework/module/load/ILoad";
 import LoadMgr from "../../framework/module/load/LoadMgr";
 import MinioMgr, { EGetSuffix, TGetOptions } from "../../framework/module/minio/MinioMgr";
@@ -19,16 +20,8 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Main extends cc.Component {
 
-    // @property(cc.Sprite)
-    // public sprite0: cc.Sprite = null;
-
-    // @property(cc.Sprite)
-    // public sprite1: cc.Sprite = null;
-
     protected async onLoad(): Promise<void> {
         UIMgr.instance(UIMgr).show(Path.DIALOG_LOG_IN, this.node);
-        // this.getMinioObject()：
-
     }
 
 
